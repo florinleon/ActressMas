@@ -1,8 +1,7 @@
 # ActressMas
 Algorithms for agents using the Actor model
 
-
-
+.
 
 Contents:
 
@@ -28,7 +27,6 @@ Mechanism design: Grove-Clarke taxes
 
 Iterated Prisoner's Dilemma
 
-
-
+.
 
 I will add the new algorithms and documentation soon.
