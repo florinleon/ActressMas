@@ -1,9 +1,7 @@
 # ActressMas
 Algorithms for agents using the Actor model
 
-.
-
-Contents:
+-
 
 Simple examples of using the ActressMas framework
 
@@ -27,6 +25,6 @@ Mechanism design: Grove-Clarke taxes
 
 Iterated Prisoner's Dilemma
 
-.
+-
 
 I will add the new algorithms and documentation soon.
