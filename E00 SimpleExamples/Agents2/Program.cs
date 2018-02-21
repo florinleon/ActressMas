@@ -29,8 +29,6 @@ namespace Agents2
             var a1 = new MyAgent1(); env.Add(a1, "agent1");
             var a2 = new MyAgent2(); env.Add(a2, "agent2");
 
-            env.
-
             // === Run ===
 
             a1.Start(); a2.Start();
