@@ -3,6 +3,7 @@ Algorithms for agents using the Actor model
 
 
 
+
 Contents:
 
 Simple examples of using the ActressMas framework
@@ -26,6 +27,7 @@ Contract Net protocol
 Mechanism design: Grove-Clarke taxes
 
 Iterated Prisoner's Dilemma
+
 
 
 
