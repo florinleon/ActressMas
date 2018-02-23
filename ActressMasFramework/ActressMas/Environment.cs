@@ -15,7 +15,7 @@
  *  PURPOSE. See the GNU General Public License for more details.         *
  *                                                                        *
  **************************************************************************/
- 
+
 using System;
 using System.Collections.Generic;
 
@@ -58,8 +58,10 @@ namespace ActressMas
             return false;
         }
 
-        public void Send(Message message) // putea fi internal, dar daca se permite accesul din exterior, se poate simula comportamentul de "forward"
+        public void Send(Message message)
         {
+            // this method could have been internal, but if access from outside is allowed, one can simulate the forwarding behavior
+
             if (message.Content.Contains("callsetupmethod"))
                 throw new Exception("\"callsetupmethod\" is a reserved keyword!");
 

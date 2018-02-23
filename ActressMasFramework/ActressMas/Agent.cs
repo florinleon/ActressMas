@@ -15,8 +15,6 @@
  *  PURPOSE. See the GNU General Public License for more details.         *
  *                                                                        *
  **************************************************************************/
- 
-using System;
 
 namespace ActressMas
 {
@@ -24,23 +22,8 @@ namespace ActressMas
     {
         private MailboxProcessor<Message> _mb;
         private bool _alive;
-        private string _name;
 
-        public string Name
-        {
-            // daca se primeste numele in constructor, trebuie facut constructor cu string in clasele derivate
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                if (value.Contains("$"))
-                    throw new Exception("Do not use $ in agent names!");
-                _name = value;
-            }
-        }
-
+        public string Name { get; set; } // if the name is given in the constructor, a constructor with a string parameter must also be added in the derived classes
         public Environment Environment { get; set; }
 
         public void Start()
