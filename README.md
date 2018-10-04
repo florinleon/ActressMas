@@ -1,9 +1,8 @@
 # ActressMas
-Algorithms for agents using the Actor model
+A .NET multiagent framework based on the Actor model 
 
-.
+Multiagent protocols and algorithms implemented with ActressMAS:
 
-Contents:
 - Simple examples of using the ActressMas framework
 - Reactive architecture for agents
 - Belief-Desire-Intention (BDI) architecture for agents
@@ -15,7 +14,6 @@ Contents:
 - Contract Net protocol
 - Mechanism design: Grove-Clarke taxes
 - Iterated Prisoner's Dilemma
-
-.
+- Predator-Prey Simulation
 
 I will add the new algorithms and documentation soon.

@@ -1,0 +1,300 @@
+[bidder01]: My valuation is 111
+[bidder06]: My valuation is 111
+[bidder07]: My valuation is 217
+[bidder03]: My valuation is 360
+[bidder04]: My valuation is 249
+[bidder05]: My valuation is 273
+[bidder02]: My valuation is 65
+[bidder08]: My valuation is 221
+[bidder10]: My valuation is 253
+[bidder09]: My valuation is 313
+	[auctioneer -> bidder01]: price 100
+	[auctioneer -> bidder02]: price 100
+	[auctioneer -> bidder03]: price 100
+	[auctioneer -> bidder04]: price 100
+	[auctioneer -> bidder05]: price 100
+	[auctioneer -> bidder06]: price 100
+	[auctioneer -> bidder07]: price 100
+	[auctioneer -> bidder08]: price 100
+	[auctioneer -> bidder09]: price 100
+	[auctioneer -> bidder10]: price 100
+	[bidder01]: bid
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder06]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder01]: price 110
+	[auctioneer -> bidder03]: price 110
+	[auctioneer -> bidder04]: price 110
+	[auctioneer -> bidder05]: price 110
+	[auctioneer -> bidder06]: price 110
+	[auctioneer -> bidder07]: price 110
+	[auctioneer -> bidder08]: price 110
+	[auctioneer -> bidder09]: price 110
+	[auctioneer -> bidder10]: price 110
+	[bidder01]: bid
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder06]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder01]: price 120
+	[auctioneer -> bidder03]: price 120
+	[auctioneer -> bidder04]: price 120
+	[auctioneer -> bidder05]: price 120
+	[auctioneer -> bidder06]: price 120
+	[auctioneer -> bidder07]: price 120
+	[auctioneer -> bidder08]: price 120
+	[auctioneer -> bidder09]: price 120
+	[auctioneer -> bidder10]: price 120
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 130
+	[auctioneer -> bidder04]: price 130
+	[auctioneer -> bidder05]: price 130
+	[auctioneer -> bidder07]: price 130
+	[auctioneer -> bidder08]: price 130
+	[auctioneer -> bidder09]: price 130
+	[auctioneer -> bidder10]: price 130
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 140
+	[auctioneer -> bidder04]: price 140
+	[auctioneer -> bidder05]: price 140
+	[auctioneer -> bidder07]: price 140
+	[auctioneer -> bidder08]: price 140
+	[auctioneer -> bidder09]: price 140
+	[auctioneer -> bidder10]: price 140
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 150
+	[auctioneer -> bidder04]: price 150
+	[auctioneer -> bidder05]: price 150
+	[auctioneer -> bidder07]: price 150
+	[auctioneer -> bidder08]: price 150
+	[auctioneer -> bidder09]: price 150
+	[auctioneer -> bidder10]: price 150
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 160
+	[auctioneer -> bidder04]: price 160
+	[auctioneer -> bidder05]: price 160
+	[auctioneer -> bidder07]: price 160
+	[auctioneer -> bidder08]: price 160
+	[auctioneer -> bidder09]: price 160
+	[auctioneer -> bidder10]: price 160
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 170
+	[auctioneer -> bidder04]: price 170
+	[auctioneer -> bidder05]: price 170
+	[auctioneer -> bidder07]: price 170
+	[auctioneer -> bidder08]: price 170
+	[auctioneer -> bidder09]: price 170
+	[auctioneer -> bidder10]: price 170
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 180
+	[auctioneer -> bidder04]: price 180
+	[auctioneer -> bidder05]: price 180
+	[auctioneer -> bidder07]: price 180
+	[auctioneer -> bidder08]: price 180
+	[auctioneer -> bidder09]: price 180
+	[auctioneer -> bidder10]: price 180
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 190
+	[auctioneer -> bidder04]: price 190
+	[auctioneer -> bidder05]: price 190
+	[auctioneer -> bidder07]: price 190
+	[auctioneer -> bidder08]: price 190
+	[auctioneer -> bidder09]: price 190
+	[auctioneer -> bidder10]: price 190
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 200
+	[auctioneer -> bidder04]: price 200
+	[auctioneer -> bidder05]: price 200
+	[auctioneer -> bidder07]: price 200
+	[auctioneer -> bidder08]: price 200
+	[auctioneer -> bidder09]: price 200
+	[auctioneer -> bidder10]: price 200
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 210
+	[auctioneer -> bidder04]: price 210
+	[auctioneer -> bidder05]: price 210
+	[auctioneer -> bidder07]: price 210
+	[auctioneer -> bidder08]: price 210
+	[auctioneer -> bidder09]: price 210
+	[auctioneer -> bidder10]: price 210
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder07]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 220
+	[auctioneer -> bidder04]: price 220
+	[auctioneer -> bidder05]: price 220
+	[auctioneer -> bidder07]: price 220
+	[auctioneer -> bidder08]: price 220
+	[auctioneer -> bidder09]: price 220
+	[auctioneer -> bidder10]: price 220
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder08]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 230
+	[auctioneer -> bidder04]: price 230
+	[auctioneer -> bidder05]: price 230
+	[auctioneer -> bidder08]: price 230
+	[auctioneer -> bidder09]: price 230
+	[auctioneer -> bidder10]: price 230
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 240
+	[auctioneer -> bidder04]: price 240
+	[auctioneer -> bidder05]: price 240
+	[auctioneer -> bidder09]: price 240
+	[auctioneer -> bidder10]: price 240
+	[bidder03]: bid
+	[bidder04]: bid
+	[bidder05]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 250
+	[auctioneer -> bidder04]: price 250
+	[auctioneer -> bidder05]: price 250
+	[auctioneer -> bidder09]: price 250
+	[auctioneer -> bidder10]: price 250
+	[bidder03]: bid
+	[bidder05]: bid
+	[bidder09]: bid
+	[bidder10]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 260
+	[auctioneer -> bidder05]: price 260
+	[auctioneer -> bidder09]: price 260
+	[auctioneer -> bidder10]: price 260
+	[bidder03]: bid
+	[bidder05]: bid
+	[bidder09]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 270
+	[auctioneer -> bidder05]: price 270
+	[auctioneer -> bidder09]: price 270
+	[bidder03]: bid
+	[bidder05]: bid
+	[bidder09]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 280
+	[auctioneer -> bidder05]: price 280
+	[auctioneer -> bidder09]: price 280
+	[bidder03]: bid
+	[bidder09]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 290
+	[auctioneer -> bidder09]: price 290
+	[bidder03]: bid
+	[bidder09]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 300
+	[auctioneer -> bidder09]: price 300
+	[bidder03]: bid
+	[bidder09]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 310
+	[auctioneer -> bidder09]: price 310
+	[bidder03]: bid
+	[bidder09]: bid
+	[auctioneer]: wake-up
+	[auctioneer -> bidder03]: price 320
+	[auctioneer -> bidder09]: price 320
+	[bidder03]: bid
+	[auctioneer]: wake-up
+[auctioneer]: Auction finished. Sold to bidder03 for price 320
+	[auctioneer -> bidder01]: winner bidder03
+	[auctioneer -> bidder02]: winner bidder03
+	[auctioneer -> bidder03]: winner bidder03
+[bidder03]: I won
+	[auctioneer -> bidder04]: winner bidder03
+	[auctioneer -> bidder05]: winner bidder03
+	[auctioneer -> bidder06]: winner bidder03
+	[auctioneer -> bidder07]: winner bidder03
+	[auctioneer -> bidder08]: winner bidder03
+	[auctioneer -> bidder09]: winner bidder03
+	[auctioneer -> bidder10]: winner bidder03
