@@ -1,0 +1,4 @@
+All source files in the ClientServer directory come from:
+Alessandro Lentini (2015). A Full Library for a Socket Client/Server System
+https://www.codeproject.com/Articles/563627/A-full-library-for-a-Socket-Client-Server-system
+https://www.codeproject.com/KB/IP/563627/socketserver_v4.zip
