@@ -36,11 +36,6 @@ namespace ActressMas
         /// </summary>
         public TurnBasedEnvironment Environment { get; set; }
 
-        ///// <summary>
-        ///// This is the method that is called when the agent receives a message and is activated. This is where the main logic of the agent should be placed.
-        ///// </summary>
-        ///// <param name="message">The message that the agent has received and should respond to</param>
-
         /// <summary>
         /// This is the method that is called once a turn. This is where the main logic of the agent should be placed. Once a message has been handled, it should
         /// be removed from the queue, using e.g. the Dequeue method.

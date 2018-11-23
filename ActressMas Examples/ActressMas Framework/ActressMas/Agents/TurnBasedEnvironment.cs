@@ -21,7 +21,7 @@ using System.Threading;
 namespace ActressMas
 {
     /// <summary>
-    /// A turn-based environment, where the all the agents are executed sequentially or in a random order during a turn.
+    /// A turn-based environment, where all the agents are executed sequentially or in a random order during a turn.
     /// </summary>
     public class TurnBasedEnvironment : Environment
     {
@@ -190,16 +190,16 @@ namespace ActressMas
         /// when the decision to stop an agent does not belong to the agent itself, but to some other agent or to an external factor.
         /// </summary>
         /// <param name="agentName">The name of the agent to be removed</param>
-        override public void Remove(string agent)
+        override public void Remove(string agentName)
         {
-            if (AgentsDict.ContainsKey(agent))
+            if (AgentsDict.ContainsKey(agentName))
             {
-                TurnBasedAgent ag = AgentsDict[agent];
+                TurnBasedAgent ag = AgentsDict[agentName];
                 Agents.Remove(ag);
-                AgentsDict.Remove(agent);
+                AgentsDict.Remove(agentName);
             }
             else
-                throw new Exception("Agent " + agent + " does not exist (TurnBasedAgent.Remove)");
+                throw new Exception("Agent " + agentName + " does not exist (TurnBasedAgent.Remove)");
         }
 
         /// <summary>

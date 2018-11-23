@@ -34,7 +34,7 @@ namespace ActressMas
         /// <summary>
         /// Imports the state of the agent, after it has moved from another container.
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="state">The state of the agent</param>
         public virtual void LoadState(AgentState state)
         {
         }
