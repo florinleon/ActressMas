@@ -74,7 +74,7 @@ namespace IteratedPrisonersDilemma
             }
 
             outcome1 += 5;
-            outcome2 += 5; // to have positive utilities
+            outcome2 += 5; // to have positive payoffs
         }
     }
 }
