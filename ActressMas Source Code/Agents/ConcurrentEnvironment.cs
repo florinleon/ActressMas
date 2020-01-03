@@ -31,6 +31,7 @@ namespace ActressMas
         public ConcurrentEnvironment()
         {
             Agents = new Dictionary<string, ConcurrentAgent>();
+            Memory = new Dictionary<string, dynamic>();
         }
 
         /// <summary>

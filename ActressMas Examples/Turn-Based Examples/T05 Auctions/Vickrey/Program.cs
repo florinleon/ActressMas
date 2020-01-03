@@ -14,6 +14,7 @@
  **************************************************************************/
 
 using ActressMas;
+using System;
 
 namespace VickreyAuction
 {
@@ -23,11 +24,13 @@ namespace VickreyAuction
         {
             var env = new TurnBasedEnvironment();
 
-            for (int i = 1; i <= Utils.NoBidders; i++)
+            Random rand = new Random();
+
+            for (int i = 1; i <= Settings.NoBidders; i++)
             {
-                int agentValuation = Utils.MinPrice + Utils.RandNoGen.Next(Utils.MaxPrice - Utils.MinPrice);
+                int agentValuation = Settings.MinPrice + rand.Next(Settings.MaxPrice - Settings.MinPrice);
                 var bidderAgent = new BidderAgent(agentValuation);
-                env.Add(bidderAgent, string.Format("bidder{0:D2}", i));
+                env.Add(bidderAgent, $"bidder{i:D2}");
             }
 
             var auctioneerAgent = new AuctioneerAgent();

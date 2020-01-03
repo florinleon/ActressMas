@@ -24,11 +24,13 @@ namespace EnglishAuction
     {
         private string _highestBidder;
         private int _highestBid;
+        private bool _started;
 
         public override void Setup()
         {
             _highestBidder = "";
-            _highestBid = Utils.ReservePrice;
+            _highestBid = 0;
+            _started = false;
 
             Broadcast("start");
         }
@@ -37,19 +39,19 @@ namespace EnglishAuction
         {
             try
             {
-                if (messages.Count == 0)
+                if (_started && messages.Count == 0)
                 {
                     HandleFinish();
                     return;
                 }
 
+                _started = true;
+
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\r\n\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -70,18 +72,22 @@ namespace EnglishAuction
 
         private void HandleBid(string sender, int bid)
         {
-            if (bid > _highestBid)
+            if (bid > _highestBid && bid >= Settings.ReservePrice)
             {
                 _highestBid = bid;
                 _highestBidder = sender;
-                Console.WriteLine("[auctioneer]: Best bid is {0} by {1}", _highestBid, _highestBidder);
             }
         }
 
         private void HandleFinish()
         {
             Console.WriteLine("[auctioneer]: Auction finished");
-            Broadcast(Utils.Str("winner", _highestBidder));
+
+            if (_highestBidder != "")
+                Broadcast($"winner {_highestBidder}");
+            else
+                Broadcast("winner none");
+
             Stop();
         }
     }

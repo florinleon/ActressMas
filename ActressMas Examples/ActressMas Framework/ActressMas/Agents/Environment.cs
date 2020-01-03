@@ -45,10 +45,9 @@ namespace ActressMas
         public abstract List<string> AllAgents();
 
         /// <summary>
-        /// Returns a list with the names of all the containers in the distributed system. This list may change over time, 
+        /// Returns a list with the names of all the containers in the distributed system. This list may change over time,
         /// as some new containers may get connected and existing ones may disconnect.
         /// </summary>
-        /// <returns></returns>
         public List<string> AllContainers()
         {
             return _container.AllContainers();
@@ -76,5 +75,10 @@ namespace ActressMas
         {
             _container = container;
         }
+
+        /// <summary>
+        /// An object that can be used as a shared memory by the agents.
+        /// </summary>
+        public Dictionary<string, dynamic> Memory { get; set; }
     }
 }

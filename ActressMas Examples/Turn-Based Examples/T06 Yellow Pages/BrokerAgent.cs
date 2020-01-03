@@ -35,10 +35,8 @@ namespace YellowPages
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -75,8 +73,7 @@ namespace YellowPages
             }
             else
             {
-                List<string> sp = new List<string>();
-                sp.Add(provider);
+                List<string> sp = new List<string> { provider };
                 _serviceProviders.Add(service, sp);
             }
         }
@@ -98,8 +95,8 @@ namespace YellowPages
                 List<string> sp = _serviceProviders[service];
                 string res = "";
                 foreach (string p in sp)
-                    res += (p + " ");
-                Send(client, "providers " + res.Trim());
+                    res += $"{p} ";
+                Send(client, $"providers {res.Trim()}");
             }
         }
     }

@@ -30,7 +30,7 @@ namespace EnglishAuction
 
         public override void Setup()
         {
-            Console.WriteLine("[{0}]: My valuation is {1}", this.Name, _valuation);
+            Console.WriteLine($"[{this.Name}]: My valuation is {_valuation}");
         }
 
         public override void Act(System.Collections.Generic.Queue<Message> messages)
@@ -40,10 +40,8 @@ namespace EnglishAuction
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -75,7 +73,7 @@ namespace EnglishAuction
         private void HandleWinner(string winner)
         {
             if (winner == this.Name)
-                Console.WriteLine("[{0}]: I have won.", this.Name);
+                Console.WriteLine($"[{this.Name}]: I have won.");
 
             Stop();
         }

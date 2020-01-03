@@ -21,44 +21,59 @@ namespace Zeuthen
 {
     public class BargainingAgent : TurnBasedAgent
     {
-        private delegate double UtilityFunctionDelegate(double d);
-
-        private delegate double RiskFunctionDelegate(double d1, double d2);
-
-        private delegate double NewProposalFunctionDelegate(double d1, double d2);
-
-        private UtilityFunctionDelegate MyUtilityFunction, OthersUtilityFunction;
-        private RiskFunctionDelegate MyRiskFunction, OthersRiskFunction;
-        private NewProposalFunctionDelegate MyNewProposalFunction;
-
+        private Func<double, double> MyUtilityFunction, OthersUtilityFunction;
         private double _myProposal, _othersProposal;
         private string _othersName;
+        private Random _rand;
 
         public override void Setup()
         {
             if (this.Name == "agent1")
             {
-                MyUtilityFunction = SharedKnowledge.Utility1;
-                OthersUtilityFunction = SharedKnowledge.Utility2;
-                MyRiskFunction = SharedKnowledge.Risk1;
-                OthersRiskFunction = SharedKnowledge.Risk2;
-                MyNewProposalFunction = SharedKnowledge.NewProposal1;
-                _othersName = "agent2";
+                MyUtilityFunction = this.Environment.Memory["Utility1"];
+                OthersUtilityFunction = this.Environment.Memory["Utility2"];
 
+                _othersName = "agent2";
                 _myProposal = 0.1;
-                Send(_othersName, Utils.Str("propose", _myProposal));
+                Send(_othersName, $"propose {_myProposal}");
             }
             else
             {
-                MyUtilityFunction = SharedKnowledge.Utility2;
-                OthersUtilityFunction = SharedKnowledge.Utility1;
-                MyRiskFunction = SharedKnowledge.Risk2;
-                OthersRiskFunction = SharedKnowledge.Risk1;
-                MyNewProposalFunction = SharedKnowledge.NewProposal2;
-                _othersName = "agent1";
+                MyUtilityFunction = this.Environment.Memory["Utility2"];
+                OthersUtilityFunction = this.Environment.Memory["Utility1"];
 
-                _myProposal = 5;
+                _othersName = "agent1";
+                _myProposal = 4.9;
             }
+
+            _rand = new Random();
+        }
+
+        private double NewProposal(double d1, double d2)
+        {
+            // the new proposal is computed iteratively, so that the procedure is general and can be applied for any pair of utility functions
+            // for our example, with linear utility functions, the new proposal can be computed analytically
+
+            if (this.Name == "agent1")
+            {
+                for (double d = d1; d <= d2; d += this.Environment.Memory["Eps"])
+                    if (MyUtilityFunction(d) * OthersUtilityFunction(d) > MyUtilityFunction(d2) * OthersUtilityFunction(d2))
+                        // this inequality is equivalent to: risk1(d) > risk2(d2)
+                        return d;
+                return d2;
+            }
+            else
+            {
+                for (double d = d1; d >= d2; d -= this.Environment.Memory["Eps"])
+                    if (MyUtilityFunction(d) * OthersUtilityFunction(d) > MyUtilityFunction(d2) * OthersUtilityFunction(d2))
+                        return d;
+                return d1;
+            }
+        }
+
+        private double Risk(Func<double, double> Utility, double d1, double d2)
+        {
+            return 1.0 - Utility(d2) / Utility(d1);
         }
 
         public override void Act(Queue<Message> messages)
@@ -68,10 +83,8 @@ namespace Zeuthen
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -114,38 +127,42 @@ namespace Zeuthen
                 return;
             }
 
-            double myRisk = MyRiskFunction(_myProposal, _othersProposal);
-            double otherRisk = OthersRiskFunction(_othersProposal, _myProposal);
+            double myRisk = Risk(MyUtilityFunction, _myProposal, _othersProposal);
+            double othersRisk = Risk(OthersUtilityFunction, _othersProposal, _myProposal);
 
-            Console.WriteLine("[{0}]: My risk is {1:F2} and the other's risk is {2:F2}", this.Name, myRisk, otherRisk);
+            Console.WriteLine($"[{this.Name}]: My risk is {myRisk:F4} and the other's risk is {othersRisk:F4}");
 
-            if ((myRisk < otherRisk) || (AreEqual(myRisk, otherRisk) && Utils.RandNoGen.NextDouble() < 0.5)) // on equality, concede randomly
+            if ((myRisk < othersRisk) || (AreEqual(myRisk, othersRisk) && _rand.NextDouble() < 0.5)) // on equality, concede randomly
             {
-                _myProposal = MyNewProposalFunction(_myProposal, _othersProposal);
-                Console.WriteLine("[{0}]: I will concede with new proposal {1:F1}", this.Name, _myProposal);
-                Send(_othersName, Utils.Str("propose", _myProposal));
+                _myProposal = NewProposal(_myProposal, _othersProposal);
+                Console.WriteLine($"[{this.Name}]: I will concede with new proposal {_myProposal:F1}");
+                Send(_othersName, $"propose {_myProposal}");
             }
             else
             {
-                Console.WriteLine("[{0}]: I will not concede", this.Name);
+                Console.WriteLine($"[{this.Name}]: I will not concede");
+
+                double eps = this.Environment.Memory["Eps"];
+                this.Environment.Memory["Eps"] = eps / 10.0;  // to avoid a blockage when finishing with equal risks
+
                 Send(_othersName, "continue");
             }
         }
 
         private void HandleContinue()
         {
-            _myProposal = MyNewProposalFunction(_myProposal, _othersProposal);
-            Send(_othersName, Utils.Str("propose", _myProposal));
+            _myProposal = NewProposal(_myProposal, _othersProposal);
+            Send(_othersName, $"propose {_myProposal}");
         }
 
         private void HandleAccept()
         {
-            Console.WriteLine("[{0}]: I accept {1:F1}", this.Name, _myProposal);
+            Console.WriteLine($"[{this.Name}]: I accept {_myProposal:F1}");
             Send(_othersName, "accept");
             Stop();
         }
 
-        protected bool AreEqual(double x, double y)
+        private bool AreEqual(double x, double y)
         {
             return (Math.Abs(x - y) < 1e-10);
         }

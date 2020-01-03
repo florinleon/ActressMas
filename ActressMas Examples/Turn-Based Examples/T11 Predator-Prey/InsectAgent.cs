@@ -23,25 +23,23 @@ namespace PredatorPrey
     public class InsectAgent : TurnBasedAgent
     {
         protected int _turnsSurvived;
+        protected World _world;
+        protected Random _rand = new Random();
 
-        // position on the grid
-        public int Line { get; set; }
+        public int Line { get; set; } // position on the grid
 
-        public int Column { get; set; }
+        public int Column { get; set; } // position on the grid
 
         protected bool TryToMove()
         {
-            World worldEnv = (World)this.Environment;
+            Direction direction = (Direction)_rand.Next(4);
 
-            Direction direction = (Direction)Utils.RandNoGen.Next(4);
-            int newLine, newColumn; // ValidMovement computes newLine and newColumn
-
-            if (worldEnv.ValidMovement(this, direction, CellState.Empty, out newLine, out newColumn))
+            if (_world.ValidMovement(this, direction, CellState.Empty, out int newLine, out int newColumn))
             {
-                if (Utils.Verbose)
-                    Console.WriteLine("Moving " + this.Name);
+                if (Settings.Verbose)
+                    Console.WriteLine($"Moving {this.Name}");
 
-                worldEnv.Move(this, newLine, newColumn);
+                _world.Move(this, newLine, newColumn);
 
                 return true;
             }
@@ -51,24 +49,23 @@ namespace PredatorPrey
 
         protected bool TryToBreed()
         {
-            World worldEnv = (World)this.Environment;
-
-            List<Direction> allowedDirections = new List<Direction>();
+            var allowedDirections = new List<Direction>();
             int newLine, newColumn;
 
             for (int i = 0; i < 4; i++)
             {
-                if (worldEnv.ValidMovement(this, (Direction)i, CellState.Empty, out newLine, out newColumn))
+                if (_world.ValidMovement(this, (Direction)i, CellState.Empty, out newLine, out newColumn))
                     allowedDirections.Add((Direction)i);
             }
 
             if (allowedDirections.Count == 0)
                 return false;
 
-            int r = Utils.RandNoGen.Next(allowedDirections.Count);
-            worldEnv.ValidMovement(this, allowedDirections[r], CellState.Empty, out newLine, out newColumn);
+            int r = _rand.Next(allowedDirections.Count);
+            _world.ValidMovement(this, allowedDirections[r], CellState.Empty, out newLine, out newColumn);
 
-            worldEnv.Breed(this, newLine, newColumn);
+            var newInsect = _world.Breed(this, newLine, newColumn);
+            this.Environment.Add(newInsect);
 
             return true;
         }

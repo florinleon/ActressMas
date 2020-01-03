@@ -26,28 +26,31 @@ namespace Bdi
 {
     public class PatrolAgent : TurnBasedAgent
     {
-        private Dictionary<string, int> beliefs;
-        private HashSet<string> desires;
-        private string intention; // only 1 intention active in this model
-        private List<string> plan;
-        private bool needToReplan;
+        private Dictionary<string, int> _beliefs;
+        private HashSet<string> _desires;
+        private string _intention; // only 1 intention active in this model
+        private List<string> _plan;
+        private bool _needToReplan;
+        private int _size;
 
         public PatrolAgent()
         {
-            beliefs = new Dictionary<string, int>();
-            desires = new HashSet<string>();
-            intention = "";
-            plan = new List<string>();
+            _beliefs = new Dictionary<string, int>();
+            _desires = new HashSet<string>();
+            _intention = "";
+            _plan = new List<string>();
         }
 
         public override void Setup()
         {
-            Console.WriteLine("Starting " + Name);
+            Console.WriteLine($"Starting {Name}");
 
-            beliefs["position"] = 0;
-            beliefs["have-water"] = 0;
-            beliefs["fire"] = -1; // unknown position
-            beliefs["water"] = -1; // unknown position
+            _size = this.Environment.Memory["Size"];
+
+            _beliefs["position"] = 0;
+            _beliefs["have-water"] = 0;
+            _beliefs["fire"] = -1; // unknown position
+            _beliefs["water"] = -1; // unknown position
 
             Send("terrain", "move right");
         }
@@ -59,10 +62,8 @@ namespace Bdi
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -70,17 +71,17 @@ namespace Bdi
                             BeliefRevision(parameters);
                             GenerateOptions();
                             FilterDesires();
-                            if (needToReplan) // if the environment is very dynamic, one can replan after each perception act
+                            if (_needToReplan) // if the environment is very dynamic, one can replan after each perception act
                                 MakePlan();
                             ExecuteAction();
                             break;
 
                         case "got-water":
-                            beliefs["have-water"] = 1;
+                            _beliefs["have-water"] = 1;
                             break;
 
                         case "fire-out":
-                            beliefs["have-water"] = 0;
+                            _beliefs["have-water"] = 0;
                             break;
 
                         default:
@@ -97,7 +98,7 @@ namespace Bdi
 
         private void BeliefRevision(List<string> parameters)
         {
-            beliefs["position"] = Convert.ToInt32(parameters[0]);
+            _beliefs["position"] = Convert.ToInt32(parameters[0]);
 
             int visualFieldSize = 3;
             TerrainState[] visualField = new TerrainState[visualFieldSize];
@@ -106,9 +107,9 @@ namespace Bdi
 
             // "see" and update beliefs
 
-            if (intention == "extinguish-fire")
+            if (_intention == "extinguish-fire")
             {
-                if (plan.Count > 0) // plan in progress
+                if (_plan.Count > 0) // plan in progress
                     return;
                 else // plan finished
                 {
@@ -117,46 +118,46 @@ namespace Bdi
                         if (visualField[i] == TerrainState.Fire)
                             fireOut = false;
                     if (fireOut)
-                        beliefs["fire"] = -1;
+                        _beliefs["fire"] = -1;
                 }
             }
 
             for (int i = 0; i < visualFieldSize; i++)
             {
                 if (visualField[i] == TerrainState.Water)
-                    beliefs["water"] = beliefs["position"] + i - 1;
+                    _beliefs["water"] = _beliefs["position"] + i - 1;
 
                 if (visualField[i] == TerrainState.Fire)
-                    beliefs["fire"] = beliefs["position"] + i - 1;
+                    _beliefs["fire"] = _beliefs["position"] + i - 1;
             }
         }
 
         private void GenerateOptions()
         {
-            if (desires.Count == 0)
-                desires.Add("patrol-right");
+            if (_desires.Count == 0)
+                _desires.Add("patrol-right");
 
-            if (intention == "extinguish-fire" && plan.Count > 0) // plan in progress
+            if (_intention == "extinguish-fire" && _plan.Count > 0) // plan in progress
                 return;
 
-            if (beliefs["position"] == Utils.Size - 1) // at right end, turn left
+            if (_beliefs["position"] == _size - 1) // at right end, turn left
             {
-                desires.Remove("patrol-right");
-                desires.Add("patrol-left");
+                _desires.Remove("patrol-right");
+                _desires.Add("patrol-left");
             }
-            else if (beliefs["position"] == 0) // at left end, turn right
+            else if (_beliefs["position"] == 0) // at left end, turn right
             {
-                desires.Remove("patrol-left");
-                desires.Add("patrol-right");
+                _desires.Remove("patrol-left");
+                _desires.Add("patrol-right");
             }
 
-            if (beliefs["fire"] != -1) // fire position is known
+            if (_beliefs["fire"] != -1) // fire position is known
             {
-                desires.Add("extinguish-fire");
+                _desires.Add("extinguish-fire");
             }
             else // the fire has been extinguished
             {
-                desires.Remove("extinguish-fire");
+                _desires.Remove("extinguish-fire");
             }
         }
 
@@ -164,37 +165,37 @@ namespace Bdi
         {
             string newIntention = "";
 
-            if (desires.Contains("extinguish-fire"))
+            if (_desires.Contains("extinguish-fire"))
                 newIntention = "extinguish-fire";
-            else if (desires.Contains("patrol-left"))
+            else if (_desires.Contains("patrol-left"))
                 newIntention = "patrol-left";
-            else if (desires.Contains("patrol-right"))
+            else if (_desires.Contains("patrol-right"))
                 newIntention = "patrol-right";
 
-            if (newIntention != intention)
+            if (newIntention != _intention)
             {
-                intention = newIntention;
-                needToReplan = true;
+                _intention = newIntention;
+                _needToReplan = true;
 
-                Console.WriteLine("Adopting new intention: " + intention);
+                Console.WriteLine($"Adopting new intention: {_intention}");
             }
         }
 
         private void MakePlan()
         {
-            plan.Clear();
-            needToReplan = false;
+            _plan.Clear();
+            _needToReplan = false;
 
-            switch (intention)
+            switch (_intention)
             {
                 case "patrol-right":
-                    for (int i = beliefs["position"]; i < Utils.Size; i++)
-                        plan.Add("move right");
+                    for (int i = _beliefs["position"]; i < _size; i++)
+                        _plan.Add("move right");
                     break;
 
                 case "patrol-left":
-                    for (int i = beliefs["position"]; i >= 0; i--)
-                        plan.Add("move left");
+                    for (int i = _beliefs["position"]; i >= 0; i--)
+                        _plan.Add("move left");
                     break;
 
                 case "extinguish-fire":
@@ -204,18 +205,18 @@ namespace Bdi
                     // the sub-goals can be implemented as a stack, and plans can be made separately for each sub-goal
 
                     // go to water
-                    for (int i = beliefs["position"]; i > beliefs["water"]; i--)
-                        plan.Add("move left");
+                    for (int i = _beliefs["position"]; i > _beliefs["water"]; i--)
+                        _plan.Add("move left");
 
                     // get water
-                    plan.Add("get-water");
+                    _plan.Add("get-water");
 
                     // go to fire
-                    for (int i = beliefs["water"]; i < beliefs["fire"]; i++) // this assumes that the position of water < position of fire
-                        plan.Add("move right");
+                    for (int i = _beliefs["water"]; i < _beliefs["fire"]; i++) // this assumes that the position of water < position of fire
+                        _plan.Add("move right");
 
                     // drop water
-                    plan.Add("drop-water");
+                    _plan.Add("drop-water");
                     break;
 
                 default:
@@ -225,11 +226,11 @@ namespace Bdi
 
         private void ExecuteAction()
         {
-            if (plan.Count == 0) // plan finished
-                intention = "";
+            if (_plan.Count == 0) // plan finished
+                _intention = "";
 
-            string action = plan[0];
-            plan.RemoveAt(0);
+            string action = _plan[0];
+            _plan.RemoveAt(0);
 
             Send("terrain", action);
         }

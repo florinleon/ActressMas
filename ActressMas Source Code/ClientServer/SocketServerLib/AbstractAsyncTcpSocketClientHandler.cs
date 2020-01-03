@@ -29,7 +29,7 @@ namespace SocketServerLib.SocketHandler
         /// </summary>
         /// <param name="handler">The socket handler</param>
         /// <param name="stream">The ssl stream</param>
-        /// <param name="useReceiveQueue">If true the message receiving is throw a queue, otherwise eash message is handle by a different thread</useReceiveQueue>
+        /// <param name="useReceiveQueue">If true the message receiving is throw a queue, otherwise eash message is handle by a different thread</param>
         public AbstractAsyncTcpSocketClientHandler(Socket handler, SslStream stream, bool useReceiveQueue)
             : base(handler, stream, useReceiveQueue)
         {
@@ -94,7 +94,7 @@ namespace SocketServerLib.SocketHandler
         /// <summary>
         /// Callback for asynchronous receiving.
         /// </summary>
-        /// <param name="ar">The socket state object for receiving data</param>
+        /// <param name="e">The socket state object for receiving data</param>
         private static void ProcessReceive(SocketAsyncEventArgs e)
         {
             AbstractAsyncTcpSocketClientHandler handler = (AbstractAsyncTcpSocketClientHandler)e.UserToken;

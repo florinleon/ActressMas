@@ -23,6 +23,7 @@ namespace YellowPages
     {
         private ServiceType _type;
         private int _operationParameter1, _operationParameter2;
+        private static Random _rand = new Random();
 
         public ClientAgent(ServiceType serviceType)
         {
@@ -31,7 +32,7 @@ namespace YellowPages
 
         public override void Setup()
         {
-            Send("broker", Utils.Str("search", _type.ToString()));
+            Send("broker", $"search {_type}");
         }
 
         public override void Act(Queue<Message> messages)
@@ -41,10 +42,8 @@ namespace YellowPages
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -69,15 +68,15 @@ namespace YellowPages
 
         private void HandleProviders(List<string> providers)
         {
-            string selected = providers[Utils.RandNoGen.Next(providers.Count)];
-            _operationParameter1 = Utils.RandNoGen.Next(100);
-            _operationParameter2 = Utils.RandNoGen.Next(100);
-            Send(selected, Utils.Str("request", _operationParameter1, _operationParameter2));
+            string selected = providers[_rand.Next(providers.Count)];
+            _operationParameter1 = _rand.Next(100);
+            _operationParameter2 = _rand.Next(100);
+            Send(selected, $"request {_operationParameter1} {_operationParameter2}");
         }
 
         private void HandleResponse(string result)
         {
-            Console.WriteLine("[{0}]: {1}({2}, {3}) = {4}", this.Name, _type, _operationParameter1, _operationParameter2, result);
+            Console.WriteLine($"[{this.Name}]: {_type}({_operationParameter1}, {_operationParameter2}) = {result}");
         }
     }
 }

@@ -15,5 +15,3 @@ Multiagent protocols and algorithms implemented with ActressMAS:
 - Mechanism design: Grove-Clarke taxes
 - Iterated Prisoner's Dilemma
 - Predator-Prey Simulation
-
-I will add the new algorithms and documentation soon.

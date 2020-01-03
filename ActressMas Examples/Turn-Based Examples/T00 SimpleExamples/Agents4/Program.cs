@@ -28,7 +28,7 @@ namespace Agents4
             var env = new TurnBasedEnvironment(5, 100);
             env.Add(new WriterAgent(), "writer");
             for (int i = 1; i <= noAgents; i++)
-                env.Add(new MyAgent(), "a" + i);
+                env.Add(new MyAgent(), $"a{i}");
             env.Start();
         }
     }
@@ -43,7 +43,7 @@ namespace Agents4
                 return;
 
             for (int i = 1; i <= 3; i++)
-                Send("writer", i.ToString());
+                Send("writer", $"{i}");
 
             _turn++;
         }
@@ -56,7 +56,7 @@ namespace Agents4
             while (messages.Count > 0)
             {
                 Message message = messages.Dequeue();
-                Console.WriteLine("Agent \'{0}\' says \'{1}\'", message.Sender, message.Content);
+                Console.WriteLine($"Agent \'{message.Sender}\' says \'{message.Content}\'");
             }
 
             Console.WriteLine();

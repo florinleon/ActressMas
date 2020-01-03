@@ -52,7 +52,7 @@ namespace Agents1
             while (messages.Count > 0)
             {
                 Message message = messages.Dequeue();
-                Console.WriteLine("{0}: {1}", message.Sender, message.Content);
+                Console.WriteLine("${message.Sender}: {message.Content}");
             }
         }
     }

@@ -25,7 +25,7 @@ namespace MechanismDesign
         {
             var env = new TurnBasedEnvironment(100, 0, false);
 
-            Utils.AisLying = false;
+            Settings.AisLying = false;
             var agentA = new BeneficiaryAgent(); env.Add(agentA, "a");
             var agentB = new BeneficiaryAgent(); env.Add(agentB, "b");
             var agentC = new BeneficiaryAgent(); env.Add(agentC, "c");
@@ -33,16 +33,17 @@ namespace MechanismDesign
 
             env.Start();
 
-            Thread.Sleep(1000);
-            Console.WriteLine("\r\n");
+            Console.WriteLine("\r\n--------------------------------------------\r\n");
 
-            Utils.AisLying = true;
-            env.Add(agentA, "a");
-            env.Add(agentB, "b");
-            env.Add(agentC, "c");
-            env.Add(dmAgent, "dm");
+            env = new TurnBasedEnvironment(100, 0, false);
 
-            env.Continue();
+            Settings.AisLying = true;
+            agentA = new BeneficiaryAgent(); env.Add(agentA, "a");
+            agentB = new BeneficiaryAgent(); env.Add(agentB, "b");
+            agentC = new BeneficiaryAgent(); env.Add(agentC, "c");
+            dmAgent = new DecisionMakerAgent(); env.Add(dmAgent, "dm");
+
+            env.Start();
         }
     }
 }

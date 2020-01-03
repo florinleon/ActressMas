@@ -13,13 +13,17 @@
  *                                                                        *
  **************************************************************************/
 
+using System;
+
 namespace IteratedPrisonersDilemma
 {
     public class RandomPrisonerAgent : PrisonerAgent
     {
+        private Random _rand = new Random();
+
         protected override string ChooseAction(int lastOutcome)
         {
-            if (Utils.RandNoGen.NextDouble() < 0.5)
+            if (_rand.NextDouble() < 0.5)
                 return "confess";
             else
                 return "deny";

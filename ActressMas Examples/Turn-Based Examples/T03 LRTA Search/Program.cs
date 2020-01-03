@@ -25,6 +25,11 @@ namespace LrtaStar
             var env = new TurnBasedEnvironment();
             var mapAgent = new MapAgent(); env.Add(mapAgent, "map");
             var searchAgent = new SearchAgent(); env.Add(searchAgent, "agent1");
+
+            env.Memory.Add("MapName", "Pendulum");
+            //env.Memory.Add("MapName", "StrangeHeuristic");
+            env.Memory.Add("Delay", 100);
+
             env.Start();
         }
     }

@@ -27,13 +27,15 @@ namespace Bdi
     {
         private static void Main(string[] args)
         {
-            var env = new TurnBasedEnvironment(0, Utils.Delay, false);
+            var env = new TurnBasedEnvironment(0, 250, false);
 
             var terrainAgent = new TerrainAgent();
             env.Add(terrainAgent, "terrain");
 
             var patrolAgent = new PatrolAgent();
             env.Add(patrolAgent, "patrol");
+
+            env.Memory.Add("Size", 15);
 
             env.Start();
         }

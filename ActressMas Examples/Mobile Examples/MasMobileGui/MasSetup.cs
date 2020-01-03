@@ -25,7 +25,7 @@ namespace MasMobileGuiTB
 
     public class MasSetup : RunnableMas
     {
-        public void RunConcurrentMas(ConcurrentEnvironment env)
+        public override void RunConcurrentMas(ConcurrentEnvironment env)
         {
             string home = env.ContainerName;
 

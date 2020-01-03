@@ -15,6 +15,7 @@
 
 using ActressMas;
 using System;
+using System.Collections.Generic;
 
 namespace IteratedPrisonersDilemma
 {
@@ -23,7 +24,7 @@ namespace IteratedPrisonersDilemma
         protected int _points = 0;
         protected int _lastOutcome = 0;
 
-        public override void Act(System.Collections.Generic.Queue<Message> messages)
+        public override void Act(Queue<Message> messages)
         {
             try
             {
@@ -34,10 +35,8 @@ namespace IteratedPrisonersDilemma
                 }
 
                 Message message = messages.Dequeue();
-                Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                string action; string parameters;
-                Utils.ParseMessage(message.Content, out action, out parameters);
+                Console.WriteLine($"\t{message.Format()}");
+                message.Parse(out string action, out string parameters);
 
                 switch (action)
                 {
@@ -62,7 +61,7 @@ namespace IteratedPrisonersDilemma
         private void HandleTurn()
         {
             string action = ChooseAction(_lastOutcome);
-            Send("police", Utils.Str("play", action));
+            Send("police", $"play {action}");
         }
 
         protected abstract string ChooseAction(int lastOutcome);
@@ -75,7 +74,7 @@ namespace IteratedPrisonersDilemma
 
         private void HandleEnd()
         {
-            Console.WriteLine("[{0}]: I have {1} points", this.Name, _points);
+            Console.WriteLine($"[{this.Name}]: I have {_points} points");
             Stop();
         }
     }

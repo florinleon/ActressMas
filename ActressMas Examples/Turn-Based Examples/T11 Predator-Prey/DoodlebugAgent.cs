@@ -28,9 +28,10 @@ namespace PredatorPrey
         {
             _turnsSurvived = 0;
             _lastEaten = 0;
+            _world = this.Environment.Memory["World"];
 
-            if (Utils.Verbose)
-                Console.WriteLine("DoodlebugAgent {0} started in ({1},{2})", this.Name, Line, Column);
+            if (Settings.Verbose)
+                Console.WriteLine($"DoodlebugAgent {this.Name} started in ({Line},{Column})");
         }
 
         public override void Act(Queue<Message> messages)
@@ -41,7 +42,7 @@ namespace PredatorPrey
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -83,24 +84,23 @@ namespace PredatorPrey
 
         private bool TryToEat()
         {
-            World worldEnv = (World)this.Environment;
-
             List<Direction> allowedDirections = new List<Direction>();
             int newLine, newColumn;
 
             for (int i = 0; i < 4; i++)
             {
-                if (worldEnv.ValidMovement(this, (Direction)i, CellState.Ant, out newLine, out newColumn))
+                if (_world.ValidMovement(this, (Direction)i, CellState.Ant, out newLine, out newColumn))
                     allowedDirections.Add((Direction)i);
             }
 
             if (allowedDirections.Count == 0)
                 return false;
 
-            int r = Utils.RandNoGen.Next(allowedDirections.Count);
-            worldEnv.ValidMovement(this, allowedDirections[r], CellState.Ant, out newLine, out newColumn);
+            int r = _rand.Next(allowedDirections.Count);
+            _world.ValidMovement(this, allowedDirections[r], CellState.Ant, out newLine, out newColumn);
 
-            worldEnv.Eat(this, newLine, newColumn);
+            AntAgent ant = _world.Eat(this, newLine, newColumn);
+            this.Environment.Remove(ant);
 
             return true;
         }
@@ -109,11 +109,11 @@ namespace PredatorPrey
         {
             // removing the doodlebug
 
-            if (Utils.Verbose)
-                Console.WriteLine("Removing " + this.Name);
+            if (Settings.Verbose)
+                Console.WriteLine($"Removing {this.Name}");
 
-            World worldEnv = (World)this.Environment;
-            worldEnv.Die(this);
+            _world.Die(this);
+            Stop();
         }
     }
 }

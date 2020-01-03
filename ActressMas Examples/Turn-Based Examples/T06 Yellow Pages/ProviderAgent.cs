@@ -32,7 +32,7 @@ namespace YellowPages
 
         public override void Setup()
         {
-            Send("broker", Utils.Str("register", _type.ToString()));
+            Send("broker", $"register {_type}");
         }
 
         public override void Act(Queue<Message> messages)
@@ -42,10 +42,8 @@ namespace YellowPages
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -70,7 +68,7 @@ namespace YellowPages
 
         private void HandleForceUnregister()
         {
-            Send("broker", Utils.Str("unregister", _type.ToString()));
+            Send("broker", $"unregister {_type}");
         }
 
         private void HandleRequest(Message message, List<string> parameters)
@@ -78,7 +76,7 @@ namespace YellowPages
             int p1 = Convert.ToInt32(parameters[0]);
             int p2 = Convert.ToInt32(parameters[1]);
             int result = (_type == ServiceType.Add) ? (p1 + p2) : (p1 - p2);
-            Send(message.Sender, Utils.Str("response", result));
+            Send(message.Sender, $"response {result}");
         }
     }
 }

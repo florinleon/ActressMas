@@ -50,6 +50,7 @@ namespace ActressMas
 
             Agents = new List<TurnBasedAgent>();
             AgentsDict = new Dictionary<string, TurnBasedAgent>();
+            Memory = new Dictionary<string, dynamic>();
         }
 
         /// <summary>

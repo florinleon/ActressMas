@@ -25,9 +25,10 @@ namespace PredatorPrey
         public override void Setup()
         {
             _turnsSurvived = 0;
+            _world = this.Environment.Memory["World"];
 
-            if (Utils.Verbose)
-                Console.WriteLine("AntAgent {0} started in ({1},{2})", this.Name, Line, Column);
+            if (Settings.Verbose)
+                Console.WriteLine($"AntAgent {this.Name} started in ({Line},{Column})");
         }
 
         public override void Act(Queue<Message> messages)
@@ -38,7 +39,7 @@ namespace PredatorPrey
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
             }
         }
 

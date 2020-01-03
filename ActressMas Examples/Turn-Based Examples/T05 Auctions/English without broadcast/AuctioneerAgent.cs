@@ -33,8 +33,8 @@ namespace EnglishAuction
 
         public override void Setup()
         {
-            _currentPrice = Utils.ReservePrice;
-            Broadcast(Utils.Str("price", _currentPrice));
+            _currentPrice = Settings.ReservePrice;
+            Broadcast($"price {_currentPrice}");
         }
 
         public override void Act(Queue<Message> messages)
@@ -50,10 +50,8 @@ namespace EnglishAuction
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -81,33 +79,33 @@ namespace EnglishAuction
         {
             if (_bidders.Count == 0) // no more bids
             {
-                _currentPrice -= Utils.Increment;
-                if (_currentPrice < Utils.ReservePrice)
+                _currentPrice -= Settings.Increment;
+                if (_currentPrice < Settings.ReservePrice)
                 {
                     Console.WriteLine("[auctioneer]: Auction finished. No winner.");
-                    Broadcast(Utils.Str("winner", "none"));
+                    Broadcast("winner none");
                 }
                 else
                 {
-                    Console.WriteLine("[auctioneer]: Auction finished. Sold to {0} for price {1}.", _highestBidder, _currentPrice);
-                    Broadcast(Utils.Str("winner", _highestBidder));
+                    Console.WriteLine($"[auctioneer]: Auction finished. Sold to {_highestBidder} for price {_currentPrice}.");
+                    Broadcast($"winner {_highestBidder}");
                 }
                 Stop();
             }
             else if (_bidders.Count == 1)
             {
                 _highestBidder = _bidders[0];
-                Console.WriteLine("[auctioneer]: Auction finished. Sold to {0} for price {1}", _highestBidder, _currentPrice);
-                Broadcast(Utils.Str("winner", _highestBidder));
+                Console.WriteLine($"[auctioneer]: Auction finished. Sold to {_highestBidder} for price {_currentPrice}");
+                Broadcast($"winner {_highestBidder}");
                 Stop();
             }
             else
             {
                 _highestBidder = _bidders[0]; // first or random from the previous round, breaking ties
-                _currentPrice += Utils.Increment;
+                _currentPrice += Settings.Increment;
 
                 foreach (string a in _bidders)
-                    Send(a, Utils.Str("price", _currentPrice));
+                    Send(a, $"price {_currentPrice}");
 
                 _bidders.Clear();
             }

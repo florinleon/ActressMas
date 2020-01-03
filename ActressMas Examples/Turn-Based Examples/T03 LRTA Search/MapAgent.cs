@@ -26,11 +26,13 @@ namespace LrtaStar
         private Dictionary<string, string> _neighbors;
         private string[] _heuristics;
 
-        public MapAgent()
+        public override void Setup()
         {
             _neighbors = new Dictionary<string, string>();
 
-            StreamReader sr = new StreamReader(Utils.MapName + ".grx");
+            string mapName = this.Environment.Memory["MapName"];
+
+            StreamReader sr = new StreamReader(mapName + ".grx");
             string graph = sr.ReadToEnd();
             sr.Close();
 
@@ -41,7 +43,7 @@ namespace LrtaStar
                 _neighbors.Add(toks[0].Trim(), toks[1].Trim());
             }
 
-            sr = new StreamReader(Utils.MapName + ".grh");
+            sr = new StreamReader(mapName + ".grh");
             string all = sr.ReadToEnd();
             sr.Close();
 
@@ -74,10 +76,8 @@ namespace LrtaStar
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -106,7 +106,7 @@ namespace LrtaStar
 
         private void HandleExpand(string sender, string state)
         {
-            Send(sender, "neighbors " + ExpandState(state));
+            Send(sender, $"neighbors {ExpandState(state)}");
         }
 
         private void HandleHeuristicsQuery(string sender, string states)
@@ -118,8 +118,8 @@ namespace LrtaStar
 
             string reply = "";
             for (int i = 1; i < toks.Length; i++)
-                reply += HeuristicEstimate(toks[i], goal).ToString() + " ";
-            Send(sender, "heuristicsReply " + reply);
+                reply += $"{HeuristicEstimate(toks[i], goal)} ";
+            Send(sender, $"heuristicsReply {reply}");
         }
     }
 }

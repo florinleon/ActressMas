@@ -45,7 +45,7 @@ namespace SocketServerLib.Message
         /// <summary>
         /// Read the header from a buffer.
         /// </summary>
-        /// <param name="destBuffer">The buffer</param>
+        /// <param name="sourceBuffer">The buffer</param>
         /// <param name="offset">The offset in the buffer</param>
         /// <returns>The next position in the buffer after the header. Return 0 in case the hedaer is not complete</returns>
         public abstract int Read(byte[] sourceBuffer, int offset);

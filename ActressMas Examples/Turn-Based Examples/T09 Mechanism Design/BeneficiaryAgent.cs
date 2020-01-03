@@ -46,18 +46,18 @@ namespace MechanismDesign
                     break;
             }
 
-            _netBenefits = new int[Utils.NoOptions];
+            _netBenefits = new int[Settings.NoOptions];
             _netBenefitsStr = "";
 
-            for (int i = 0; i < Utils.NoOptions; i++)
+            for (int i = 0; i < Settings.NoOptions; i++)
             {
-                _netBenefits[i] = totalBenefits[i] - i * Utils.UnitCost / Utils.NoBeneficiaries;
-                _netBenefitsStr += string.Format("{0} ", _netBenefits[i]);
+                _netBenefits[i] = totalBenefits[i] - i * Settings.UnitCost / Settings.NoBeneficiaries;
+                _netBenefitsStr += $"{_netBenefits[i]} ";
             }
 
             _netBenefitsStr = _netBenefitsStr.TrimEnd();
 
-            Console.WriteLine("[{0}]: My net benefits are ({1})", this.Name, _netBenefitsStr);
+            Console.WriteLine($"[{this.Name}]: My net benefits are ({_netBenefitsStr})");
         }
 
         public override void Act(Queue<Message> messages)
@@ -67,10 +67,8 @@ namespace MechanismDesign
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -95,13 +93,13 @@ namespace MechanismDesign
 
         private void HandleReport()
         {
-            if (Utils.AisLying && this.Name == "a")
+            if (Settings.AisLying && this.Name == "a")
             {
                 Console.WriteLine("[a]: My *reported* net benefits are (0 20 10 70)");
                 Send("dm", "benefits 0 20 10 70");
             }
             else
-                Send("dm", Utils.Str("benefits", _netBenefitsStr));
+                Send("dm", $"benefits {_netBenefitsStr}");
         }
 
         private void HandleResult(List<string> parameters)
@@ -109,7 +107,7 @@ namespace MechanismDesign
             int noLights = Convert.ToInt32(parameters[0]);
             int tax = Convert.ToInt32(parameters[1]);
 
-            Console.WriteLine("[{0}]: My net benefit after tax is {1}", this.Name, _netBenefits[noLights] - tax);
+            Console.WriteLine($"[{this.Name}]: My net benefit after tax is {_netBenefits[noLights] - tax}");
 
             Stop();
         }

@@ -24,6 +24,6 @@ namespace ActressMas
         /// <summary>
         /// ActressMas current version
         /// </summary>
-        public static readonly string Version = "ActressMas Version 2.0";
+        public static readonly string Version = "ActressMas Version 2.1";
     }
 }

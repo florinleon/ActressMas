@@ -31,15 +31,12 @@ namespace Bdi
     {
         private TerrainForm _formGui;
         public int PatrolPosition { get; set; }
-
         public TerrainState[] States { get; set; }
-
         private int _turns = 0;
+        private int _size;
 
         public TerrainAgent()
         {
-            States = new TerrainState[Utils.Size];
-
             Thread t = new Thread(new ThreadStart(GUIThread));
             t.Start();
         }
@@ -54,11 +51,14 @@ namespace Bdi
 
         public override void Setup()
         {
-            Console.WriteLine("Starting " + Name);
+            Console.WriteLine($"Starting {Name}");
 
+            _size = Environment.Memory["Size"];
+
+            States = new TerrainState[_size];
             States[0] = TerrainState.Water;
 
-            for (int i = 1; i < Utils.Size; i++)
+            for (int i = 1; i < _size; i++)
                 States[i] = TerrainState.Normal;
 
             PatrolPosition = 0;
@@ -71,10 +71,8 @@ namespace Bdi
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     for (int i = 0; i < States.Length; i++)
                         if (States[i] == TerrainState.GettingWater)
@@ -138,7 +136,7 @@ namespace Bdi
                 current = States[PatrolPosition];
                 right = States[PatrolPosition + 1];
             }
-            else if (PatrolPosition == Utils.Size - 1) // right end
+            else if (PatrolPosition == _size - 1) // right end
             {
                 left = States[PatrolPosition - 1];
                 current = States[PatrolPosition];
@@ -151,7 +149,7 @@ namespace Bdi
                 right = States[PatrolPosition + 1];
             }
 
-            Send(sender, Utils.Str("percepts", PatrolPosition, (int)left, (int)current, (int)right));
+            Send(sender, $"percepts {PatrolPosition} {(int)left} {(int)current} {(int)right}");
         }
     }
 }

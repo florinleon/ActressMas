@@ -22,15 +22,15 @@ namespace IteratedPrisonersDilemma
     {
         private static void Main(string[] args)
         {
-            var env = new IPDEnvironment(Utils.NoTurns);
+            var env = new IPDEnvironment(10); // 10 turns
 
-            //var prisonerAgent1 = new ConfessPrisonerAgent();
-            //var prisonerAgent2 = new RandomPrisonerAgent();
             var prisonerAgent1 = new TitForTatPrisonerAgent();
             var prisonerAgent2 = new TitForTatPrisonerAgent();
+            //var prisonerAgent1 = new ConfessPrisonerAgent();
+            //var prisonerAgent2 = new RandomPrisonerAgent();
 
-            env.Add(prisonerAgent1, "p1-" + prisonerAgent1.GetType().Name);
-            env.Add(prisonerAgent2, "p2-" + prisonerAgent2.GetType().Name);
+            env.Add(prisonerAgent1, $"p1-{prisonerAgent1.GetType().Name}");
+            env.Add(prisonerAgent2, $"p2-{prisonerAgent2.GetType().Name}");
 
             var policeAgent = new PoliceAgent();
             env.Add(policeAgent, "police");
@@ -51,7 +51,7 @@ namespace IteratedPrisonersDilemma
             public override void TurnFinished(int turn)
             {
                 if (turn < _noTurns && turn % 2 == 0)
-                    Console.WriteLine("Round {0}", turn / 2 + 1);
+                    Console.WriteLine($"Round {turn / 2 + 1}");
                 else if (turn == _noTurns)
                     Console.WriteLine("Results");
 

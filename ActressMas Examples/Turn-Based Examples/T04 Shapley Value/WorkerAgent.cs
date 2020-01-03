@@ -27,7 +27,7 @@ namespace Shapley
 
         public WorkerAgent(int s1, int s2, int s3)
         {
-            _skillLevels = new int[3]; // in the rest of the program, Utils.NoAttributes and Utils.MaxLevel are used
+            _skillLevels = new int[3];  // in the rest of the program, NoAttributes and MaxLevel are used
             _skillLevels[0] = s1;
             _skillLevels[1] = s2;
             _skillLevels[2] = s3;
@@ -41,10 +41,7 @@ namespace Shapley
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    //Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -74,12 +71,12 @@ namespace Shapley
         private void HandleTask(List<string> taskParameters)
         {
             string estimates = "";
-            for (int i = 0; i < Utils.NoAttributes; i++)
+            for (int i = 0; i < this.Environment.Memory["NoAttributes"]; i++)
             {
                 int time = Convert.ToInt32(taskParameters[i]) / _skillLevels[i];
-                estimates += string.Format("{0} ", time);
+                estimates += $"{time} ";
             }
-            Send("manager", "time " + estimates.Trim());
+            Send("manager", $"time {estimates.Trim()}");
         }
 
         private void HandleReward(double reward)
@@ -89,7 +86,7 @@ namespace Shapley
 
         private void HandleReport()
         {
-            Console.WriteLine("Agent {0} has {1:F3}", this.Name, _totalReward);
+            Console.WriteLine($"Agent {this.Name} has {_totalReward:F3}");
         }
     }
 }

@@ -15,7 +15,6 @@
  **************************************************************************/
 
 using ActressMas;
-using System.Threading;
 
 namespace Shapley
 {
@@ -25,12 +24,12 @@ namespace Shapley
         {
             var env = new TurnBasedEnvironment(1000);
 
-            for (int i = 1; i <= 3; i++) // Utils.MaxLevel
+            for (int i = 1; i <= 3; i++) // MaxLevel
                 for (int j = 1; j <= 3; j++)
                     for (int k = 1; k <= 3; k++)
                     {
                         var workerAgent = new WorkerAgent(i, j, k);
-                        env.Add(workerAgent, string.Format("worker{0}{1}{2}", i, j, k));
+                        env.Add(workerAgent, $"worker{i}{j}{k}");
                     }
 
             var calculatorAgent = new CalculatorAgent();
@@ -38,6 +37,11 @@ namespace Shapley
 
             var managerAgent = new ManagerAgent();
             env.Add(managerAgent, "manager");
+
+            env.Memory.Add("NoAttributes", 3);
+            env.Memory.Add("MaxLevel", 3);
+            env.Memory.Add("NoTasks", 100);
+            env.Memory.Add("NoBids", 3);
 
             env.Start();
         }

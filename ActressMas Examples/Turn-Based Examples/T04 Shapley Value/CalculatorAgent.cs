@@ -29,10 +29,8 @@ namespace Shapley
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     // utility = 1 / time
 
@@ -58,7 +56,7 @@ namespace Shapley
                         double valueAdded1 = (u1 + (u12 - u2)) / 2.0; // AB, BA
                         double valueAdded2 = (u2 + (u12 - u1)) / 2.0; // BA, AB
                         Normalize(ref valueAdded1, ref valueAdded2);
-                        Send("manager", Utils.Str("results", valueAdded1, valueAdded2, 0));
+                        Send("manager", $"results {valueAdded1} {valueAdded2} 0");
                     }
                     else if (AreEqual(max, u13))
                     {
@@ -66,7 +64,7 @@ namespace Shapley
                         double valueAdded1 = (u1 + (u13 - u3)) / 2.0; // AC, CA
                         double valueAdded3 = (u3 + (u13 - u1)) / 2.0; // CA, AC
                         Normalize(ref valueAdded1, ref valueAdded3);
-                        Send("manager", Utils.Str("results", valueAdded1, 0, valueAdded3));
+                        Send("manager", $"results {valueAdded1} 0 {valueAdded3}");
                     }
                     else if (AreEqual(max, u23))
                     {
@@ -74,7 +72,7 @@ namespace Shapley
                         double valueAdded2 = (u2 + (u23 - u3)) / 2.0; // BC, CB
                         double valueAdded3 = (u3 + (u23 - u2)) / 2.0; // CB, BC
                         Normalize(ref valueAdded2, ref valueAdded3);
-                        Send("manager", Utils.Str("results", 0, valueAdded2, valueAdded3));
+                        Send("manager", $"results 0 {valueAdded2} {valueAdded3}");
                     }
                     else if (AreEqual(max, u123))
                     {
@@ -83,7 +81,7 @@ namespace Shapley
                         double valueAdded2 = (u2 + u2 + (u12 - u1) + (u123 - u13) + (u123 - u13) + (u23 - u3)) / 6.0; // BAC, BCA, ABC, ACB, CAB, CBA
                         double valueAdded3 = (u3 + u3 + (u123 - u12) + (u13 - u1) + (u123 - u12) + (u23 - u2)) / 6.0; // CAB, CBA, ABC, ACB, BAC, BCA
                         Normalize(ref valueAdded1, ref valueAdded2, ref valueAdded3);
-                        Send("manager", Utils.Str("results", valueAdded1, valueAdded2, valueAdded3));
+                        Send("manager", $"results {valueAdded1} {valueAdded2} {valueAdded3}");
                     }
                 }
             }

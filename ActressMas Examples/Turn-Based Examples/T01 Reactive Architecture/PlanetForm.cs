@@ -23,6 +23,7 @@ namespace Reactive
     {
         private PlanetAgent _ownerAgent;
         private Bitmap _doubleBufferImage;
+        private int _size;
 
         public PlanetForm()
         {
@@ -32,6 +33,7 @@ namespace Reactive
         public void SetOwner(PlanetAgent a)
         {
             _ownerAgent = a;
+            _size = a.Environment.Memory["Size"];
         }
 
         private void pictureBox_Paint(object sender, PaintEventArgs e)
@@ -65,15 +67,15 @@ namespace Reactive
             g.Clear(Color.White);
 
             int minXY = Math.Min(w, h);
-            int cellSize = (minXY - 40) / Utils.Size;
+            int cellSize = (minXY - 40) / _size;
 
-            for (int i = 0; i <= Utils.Size; i++)
+            for (int i = 0; i <= _size; i++)
             {
-                g.DrawLine(Pens.DarkGray, 20, 20 + i * cellSize, 20 + Utils.Size * cellSize, 20 + i * cellSize);
-                g.DrawLine(Pens.DarkGray, 20 + i * cellSize, 20, 20 + i * cellSize, 20 + Utils.Size * cellSize);
+                g.DrawLine(Pens.DarkGray, 20, 20 + i * cellSize, 20 + _size * cellSize, 20 + i * cellSize);
+                g.DrawLine(Pens.DarkGray, 20 + i * cellSize, 20, 20 + i * cellSize, 20 + _size * cellSize);
             }
 
-            g.FillEllipse(Brushes.Red, 20 + Utils.Size / 2 * cellSize + 4, 20 + Utils.Size / 2 * cellSize + 4, cellSize - 8, cellSize - 8); // the base
+            g.FillEllipse(Brushes.Red, 20 + _size / 2 * cellSize + 4, 20 + _size / 2 * cellSize + 4, cellSize - 8, cellSize - 8); // the base
 
             if (_ownerAgent != null)
             {

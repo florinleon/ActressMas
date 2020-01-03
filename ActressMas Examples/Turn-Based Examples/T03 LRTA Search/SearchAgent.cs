@@ -49,6 +49,7 @@ namespace LrtaStar
         private Dictionary<string, int> _heuristics;
         private List<StatePairCost> _costs;
         private List<string> _heuristicQueries;
+        private Random _rand = new Random();
 
         public SearchAgent()
         {
@@ -61,7 +62,7 @@ namespace LrtaStar
             _initialState = "A";
             _goalState = "E";
             _currentState = _initialState;
-            Send("map", "expand " + _currentState);
+            Send("map", $"expand {_currentState}");
         }
 
         public override void Act(Queue<Message> messages)
@@ -71,10 +72,8 @@ namespace LrtaStar
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -115,10 +114,10 @@ namespace LrtaStar
 
             if (_heuristicQueries.Count > 0)
             {
-                string hq = _goalState + " ";
+                string hq = $"{_goalState} ";
                 foreach (string s in _heuristicQueries)
-                    hq += s + " ";
-                Send("map", "heuristicsQuery " + hq);
+                    hq += $"{s} ";
+                Send("map", $"heuristicsQuery {hq}");
             }
             else
                 MoveToNeighborState();
@@ -160,13 +159,13 @@ namespace LrtaStar
                     minStates.Add(spcf.ToState);
             }
 
-            string nextState = minStates[Utils.RandNoGen.Next(minStates.Count)];
+            string nextState = minStates[_rand.Next(minStates.Count)];
 
-            Console.WriteLine("{0} moves to state {1}", this.Name, nextState);
+            Console.WriteLine($"{this.Name} moves to state {nextState}");
 
             if (nextState == _goalState)
             {
-                Console.WriteLine("{0} reached goal state {1}", this.Name, nextState);
+                Console.WriteLine($"{this.Name} reached goal state {nextState}");
                 Send("map", "finished");
                 Stop();
                 return;
@@ -177,11 +176,11 @@ namespace LrtaStar
             else
                 _heuristics.Add(_currentState, fnMin);
 
-            Console.WriteLine("{0} updates h({1}) = {2}", this.Name, _currentState, _heuristics[_currentState]);
+            Console.WriteLine($"{this.Name} updates h({_currentState}) = {_heuristics[_currentState]}");
 
             _currentState = nextState;
 
-            Thread.Sleep(Utils.Delay);
+            Thread.Sleep(this.Environment.Memory["Delay"]);
 
             ProcessState();
         }
@@ -198,7 +197,7 @@ namespace LrtaStar
                 }
             }
 
-            Send("map", "expand " + _currentState);
+            Send("map", $"expand {_currentState}");
         }
     }
 }

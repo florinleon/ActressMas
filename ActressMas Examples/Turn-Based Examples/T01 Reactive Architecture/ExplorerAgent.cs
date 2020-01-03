@@ -24,29 +24,33 @@ namespace Reactive
         private int _x, _y;
         private State _state;
         private string _resourceCarried;
+        private int _size;
+        private Random _rand = new Random();
 
         private enum State { Free, Carrying };
 
         public override void Setup()
         {
-            Console.WriteLine("Starting " + Name);
+            Console.WriteLine($"Starting {Name}");
 
-            _x = Utils.Size / 2;
-            _y = Utils.Size / 2;
+            _size = Environment.Memory["Size"];
+
+            _x = _size / 2;
+            _y = _size / 2;
             _state = State.Free;
 
             while (IsAtBase())
             {
-                _x = Utils.RandNoGen.Next(Utils.Size);
-                _y = Utils.RandNoGen.Next(Utils.Size);
+                _x = _rand.Next(_size);
+                _y = _rand.Next(_size);
             }
 
-            Send("planet", Utils.Str("position", _x, _y));
+            Send("planet", $"position {_x} {_y}");
         }
 
         private bool IsAtBase()
         {
-            return (_x == Utils.Size / 2 && _y == Utils.Size / 2); // the position of the base
+            return (_x == _size / 2 && _y == _size / 2); // the position of the base
         }
 
         public override void Act(Queue<Message> messages)
@@ -56,67 +60,65 @@ namespace Reactive
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action;
-                    List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     if (action == "block")
                     {
                         // R1. If you detect an obstacle, then change direction
                         MoveRandomly();
-                        Send("planet", Utils.Str("change", _x, _y));
+                        Send("planet", $"change {_x} {_y}");
                     }
                     else if (action == "move" && _state == State.Carrying && IsAtBase())
                     {
                         // R2. If carrying samples and at the base, then unload samples
                         _state = State.Free;
-                        Send("planet", Utils.Str("unload", _resourceCarried));
+                        Send("planet", $"unload {_resourceCarried}");
                     }
                     else if (action == "move" && _state == State.Carrying && !IsAtBase())
                     {
                         // R3. If carrying samples and not at the base, then travel up gradient
                         MoveToBase();
-                        Send("planet", Utils.Str("carry", _x, _y));
+                        Send("planet", $"carry {_x} {_y}");
                     }
                     else if (action == "rock")
                     {
                         // R4. If you detect a sample, then pick sample up
                         _state = State.Carrying;
                         _resourceCarried = parameters[0];
-                        Send("planet", Utils.Str("pick-up", _resourceCarried));
+                        Send("planet", $"pick-up {_resourceCarried}");
                     }
                     else if (action == "move")
                     {
                         // R5. If (true), then move randomly
                         MoveRandomly();
-                        Send("planet", Utils.Str("change", _x, _y));
+                        Send("planet", $"change {_x} {_y}");
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.ToString()); // for debugging
             }
         }
 
         private void MoveRandomly()
         {
-            int d = Utils.RandNoGen.Next(4);
+            int d = _rand.Next(4);
             switch (d)
             {
                 case 0: if (_x > 0) _x--; break;
-                case 1: if (_x < Utils.Size - 1) _x++; break;
+                case 1: if (_x < _size - 1) _x++; break;
                 case 2: if (_y > 0) _y--; break;
-                case 3: if (_y < Utils.Size - 1) _y++; break;
+                case 3: if (_y < _size - 1) _y++; break;
             }
         }
 
         private void MoveToBase()
         {
-            int dx = _x - Utils.Size / 2;
-            int dy = _y - Utils.Size / 2;
+            int dx = _x - _size / 2;
+            int dy = _y - _size / 2;
 
             if (Math.Abs(dx) > Math.Abs(dy))
                 _x -= Math.Sign(dx);

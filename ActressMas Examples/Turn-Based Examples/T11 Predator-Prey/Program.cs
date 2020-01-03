@@ -14,33 +14,48 @@
  *                                                                        *
  **************************************************************************/
 
+using System;
+using System.Linq;
+
 namespace PredatorPrey
 {
     public class Program
     {
+        private static Random _rand = new Random();
+
         private static void Main(string[] args)
         {
-            var worldEnv = new World(Utils.NoTurns); // derived from ActressMas.TurnBasedEnvironment
+            var worldEnv = new WorldEnvironment(Settings.NoTurns); // derived from ActressMas.TurnBasedEnvironment
+            var world = worldEnv.Memory["World"];
 
-            int noCells = Utils.GridSize * Utils.GridSize;
+            int noCells = Settings.GridSize * Settings.GridSize;
 
-            int[] randVect = Utils.RandomPermutation(noCells);
+            int[] randVect = RandomPermutation(noCells);
 
-            for (int i = 0; i < Utils.NoDoodlebugs; i++)
+            for (int i = 0; i < Settings.NoDoodlebugs; i++)
             {
                 var a = new DoodlebugAgent();
-                worldEnv.Add(a, worldEnv.CreateName(a)); // unique name
-                worldEnv.AddAgentToMap(a, randVect[i]);
+                worldEnv.Add(a, world.CreateName(a)); // unique name
+                world.AddAgentToMap(a, randVect[i]);
             }
 
-            for (int i = Utils.NoDoodlebugs; i < Utils.NoDoodlebugs + Utils.NoAnts; i++)
+            for (int i = Settings.NoDoodlebugs; i < Settings.NoDoodlebugs + Settings.NoAnts; i++)
             {
                 var a = new AntAgent();
-                worldEnv.Add(a, worldEnv.CreateName(a));
-                worldEnv.AddAgentToMap(a, randVect[i]);
+                worldEnv.Add(a, world.CreateName(a));
+                world.AddAgentToMap(a, randVect[i]);
             }
 
             worldEnv.Start();
+        }
+
+        private static int[] RandomPermutation(int n)
+        {
+            int[] numbers = new int[n];
+            for (int i = 0; i < n; i++)
+                numbers[i] = i;
+            int[] randPerm = numbers.OrderBy(x => _rand.Next()).ToArray();
+            return randPerm;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace VickreyAuction
 
         public override void Setup()
         {
-            Console.WriteLine("[{0}]: My valuation is {1}", this.Name, _valuation);
+            Console.WriteLine($"[{this.Name}]: My valuation is {_valuation}");
         }
 
         public override void Act(Queue<Message> messages)
@@ -40,10 +40,8 @@ namespace VickreyAuction
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -68,13 +66,13 @@ namespace VickreyAuction
 
         private void HandleStart()
         {
-            Send("auctioneer", Utils.Str("bid", _valuation));
+            Send("auctioneer", $"bid {_valuation}");
         }
 
         private void HandleWinner(string winner)
         {
             if (winner == this.Name)
-                Console.WriteLine("[{0}]: I have won.", this.Name);
+                Console.WriteLine($"[{this.Name}]: I have won.");
 
             Stop();
         }

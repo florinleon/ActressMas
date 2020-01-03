@@ -13,6 +13,9 @@
  *                                                                        *
  **************************************************************************/
 
+using System.Collections.Generic;
+using System.Text;
+
 namespace ActressMas
 {
     /// <summary>
@@ -74,5 +77,59 @@ namespace ActressMas
         /// The name of the agent that sends the message
         /// </summary>
         public string Sender { get; set; }
+
+        /// <summary>
+        /// Parses the content of a message and identifies the action (similar, e.g., to a performative) and the list of parameters.
+        /// </summary>
+        public void Parse(out string action, out List<string> parameters)
+        {
+            string[] t = Content.Split();
+
+            action = t[0];
+
+            parameters = new List<string>();
+            for (int i = 1; i < t.Length; i++)
+                parameters.Add(t[i]);
+        }
+
+        /// <summary>
+        /// Parses the content of a message and identifies the action (similar, e.g., to a performative) and the parameters concatenated in a string.
+        /// </summary>
+        public void Parse(out string action, out string parameters)
+        {
+            string[] t = Content.Split();
+
+            action = t[0];
+
+            StringBuilder sb = new StringBuilder();
+
+            if (t.Length > 1)
+            {
+                for (int i = 1; i < t.Length - 1; i++)
+                    sb.Append($"{t[i]} ");
+                sb.Append(t[t.Length - 1]);
+            }
+
+            parameters = sb.ToString();
+        }
+
+        /// <summary>
+        /// Parses the content of a message and identifies the action (similar, e.g., to a performative) and the single parameter.
+        /// </summary>
+        public void Parse1P(out string action, out string parameter)
+        {
+            string[] t = Content.Split();
+            action = t[0];
+            parameter = t[1];
+        }
+
+        /// <summary>
+        /// Returns a string of the form "[Sender -> Receiver]: Content"
+        /// </summary>
+        /// <returns></returns>
+        public string Format()
+        {
+            return $"[{Sender} -> {Receiver}]: {Content}";
+        }
     }
 }

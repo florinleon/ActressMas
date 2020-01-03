@@ -26,7 +26,7 @@ namespace Agents3
             var env = new TurnBasedEnvironment(5, 100);
             int noAgents = 10;
             for (int i = 1; i <= noAgents; i++)
-                env.Add(new MyAgent(), "agent" + i);
+                env.Add(new MyAgent(), $"agent{i}");
             env.Start();
         }
     }

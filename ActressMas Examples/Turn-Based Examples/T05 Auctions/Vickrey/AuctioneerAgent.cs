@@ -27,7 +27,6 @@ namespace VickreyAuction
             public int BidValue { get; set; }
 
             public Bid(string bidder, int bidValue)
-                : this()
             {
                 Bidder = bidder;
                 BidValue = bidValue;
@@ -59,10 +58,8 @@ namespace VickreyAuction
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -95,7 +92,7 @@ namespace VickreyAuction
             for (int i = 0; i < _bids.Count; i++)
             {
                 int b = _bids[i].BidValue;
-                if (b > highestBid && b >= Utils.ReservePrice)
+                if (b > highestBid && b >= Settings.ReservePrice)
                 {
                     highestBid = b;
                     highestBidder = _bids[i].Bidder;
@@ -106,7 +103,7 @@ namespace VickreyAuction
             if (highestBidder == "") // no bids above reserve price
             {
                 Console.WriteLine("[auctioneer]: Auction finished. No winner.");
-                Broadcast(Utils.Str("winner", "none"));
+                Broadcast("winner none");
             }
             else
             {
@@ -114,8 +111,8 @@ namespace VickreyAuction
                 Array.Reverse(bidValues);
                 int winningPrice = bidValues[1]; // second price
 
-                Console.WriteLine("[auctioneer]: Auction finished. Sold to {0} for price {1}.", highestBidder, winningPrice);
-                Broadcast(Utils.Str("winner", highestBidder));
+                Console.WriteLine($"[auctioneer]: Auction finished. Sold to {highestBidder} for price {winningPrice}.");
+                Broadcast($"winner {highestBidder}");
             }
 
             Stop();

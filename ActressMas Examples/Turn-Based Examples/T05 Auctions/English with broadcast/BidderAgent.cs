@@ -24,43 +24,56 @@ namespace EnglishAuction
     {
         private int _valuation;
         private int _currentBid;
+        private bool _participating;
 
         public BidderAgent(int val)
         {
             _valuation = val;
-            _currentBid = Utils.MinPrice;
+
+            if (_valuation >= Settings.ReservePrice)
+            {
+                _currentBid = Settings.ReservePrice;
+                _participating = true;
+            }
+            else
+                _participating = false;
         }
 
         public override void Setup()
         {
-            Console.WriteLine("[{0}]: My valuation is {1}", this.Name, _valuation);
+            Console.WriteLine($"[{this.Name}]: My valuation is {_valuation}");
         }
 
         public override void Act(Queue<Message> messages)
         {
             try
             {
+                if (!_participating)
+                    Stop();
+
+                int highestBid = 0;
+
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
                         case "start":
-                            Console.WriteLine("\r\n\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
+                            Console.WriteLine($"\r\n\t{message.Format()}");
                             HandleStart();
                             break;
 
                         case "bid":
-                            //Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
                             Console.Write("."); // bids all-to-all
-                            HandleBid(Convert.ToInt32(parameters));
+                            int bid = Convert.ToInt32(parameters);
+                            if (bid > highestBid)
+                                highestBid = bid;
                             break;
 
                         case "winner":
-                            Console.WriteLine("\r\n\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
+                            Console.WriteLine($"\r\n\t{message.Format()}");
                             HandleWinner(parameters);
                             break;
 
@@ -68,6 +81,9 @@ namespace EnglishAuction
                             break;
                     }
                 }
+
+                if (highestBid > 0)
+                    HandleBid(highestBid);
             }
             catch (Exception ex)
             {
@@ -77,23 +93,28 @@ namespace EnglishAuction
 
         private void HandleStart()
         {
-            Broadcast(Utils.Str("bid", _currentBid));
+            if (_currentBid > 0)
+            {
+                Console.WriteLine($"{this.Name} bidding {_currentBid}");
+                Broadcast($"bid {_currentBid}");
+            }
         }
 
         private void HandleBid(int receivedBid)
         {
-            int next = receivedBid + Utils.Increment;
+            int next = receivedBid + Settings.Increment;
             if (receivedBid >= _currentBid && next <= _valuation)
             {
                 _currentBid = next;
-                Broadcast(Utils.Str("bid", next));
+                Console.WriteLine($"{this.Name} bidding {next}");
+                Broadcast($"bid {next}");
             }
         }
 
         private void HandleWinner(string winner)
         {
             if (winner == this.Name)
-                Console.WriteLine("[{0}]: I have won with {1}", this.Name, _currentBid);
+                Console.WriteLine($"[{this.Name}]: I have won with {_currentBid}");
 
             Stop();
         }

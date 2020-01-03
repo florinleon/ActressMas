@@ -21,16 +21,19 @@ namespace Reactive
     {
         private static void Main(string[] args)
         {
-            var env = new TurnBasedEnvironment(0, Utils.Delay);
+            var env = new TurnBasedEnvironment(0, 100); // no turn limit, delay 100 ms
 
             var planetAgent = new PlanetAgent();
             env.Add(planetAgent, "planet");
 
-            for (int i = 1; i <= Utils.NoExplorers; i++)
+            for (int i = 1; i <= 5; i++) // 5 explorers
             {
                 var explorerAgent = new ExplorerAgent();
-                env.Add(explorerAgent, "explorer" + i);
+                env.Add(explorerAgent, $"explorer{i}");
             }
+
+            env.Memory.Add("Size", 11);
+            env.Memory.Add("NoResources", 10);
 
             env.Start();
         }

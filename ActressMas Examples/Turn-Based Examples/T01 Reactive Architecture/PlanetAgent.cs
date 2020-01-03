@@ -26,6 +26,7 @@ namespace Reactive
         public Dictionary<string, string> ExplorerPositions { get; set; }
         public Dictionary<string, string> ResourcePositions { get; set; }
         public Dictionary<string, string> Loads { get; set; }
+        private Random _rand = new Random();
 
         public PlanetAgent()
         {
@@ -49,20 +50,23 @@ namespace Reactive
         {
             Console.WriteLine("Starting " + Name);
 
+            int size = Environment.Memory["Size"];
+            int noResources = Environment.Memory["NoResources"];
+
             List<string> resPos = new List<string>();
-            string compPos = Utils.Str(Utils.Size / 2, Utils.Size / 2);
+            string compPos = $"{size / 2} {size / 2}";
             resPos.Add(compPos); // the position of the base
 
-            for (int i = 1; i <= Utils.NoResources; i++)
+            for (int i = 1; i <= noResources; i++)
             {
                 while (resPos.Contains(compPos)) // resources do not overlap
                 {
-                    int x = Utils.RandNoGen.Next(Utils.Size);
-                    int y = Utils.RandNoGen.Next(Utils.Size);
-                    compPos = Utils.Str(x, y);
+                    int x = _rand.Next(size);
+                    int y = _rand.Next(size);
+                    compPos = $"{x} {y}";
                 }
 
-                ResourcePositions.Add("res" + i, compPos);
+                ResourcePositions.Add($"res{i}", compPos);
                 resPos.Add(compPos);
             }
         }
@@ -74,10 +78,8 @@ namespace Reactive
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -111,6 +113,7 @@ namespace Reactive
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.ToString()); // for debugging
             }
         }
 
@@ -139,7 +142,7 @@ namespace Reactive
             {
                 if (ResourcePositions[k] == position)
                 {
-                    Send(sender, "rock " + k);
+                    Send(sender, $"rock {k}");
                     return;
                 }
             }

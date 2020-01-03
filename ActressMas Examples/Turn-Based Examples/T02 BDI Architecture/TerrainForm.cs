@@ -28,6 +28,7 @@ namespace Bdi
     {
         private TerrainAgent _ownerAgent;
         private Bitmap _doubleBufferImage;
+        private int _size;
 
         public TerrainForm()
         {
@@ -37,6 +38,7 @@ namespace Bdi
         public void SetOwner(TerrainAgent a)
         {
             _ownerAgent = a;
+            _size = a.Environment.Memory["Size"];
         }
 
         private void pictureBox_Paint(object sender, PaintEventArgs e)
@@ -73,14 +75,14 @@ namespace Bdi
 
                 g.DrawRectangle(Pens.DarkGray, 0, 0, w - 1, h - 1);
 
-                double cellSize = (double)w / (double)Utils.Size;
+                double cellSize = (double)w / (double)_size;
 
-                for (int i = 1; i < Utils.Size; i++)
+                for (int i = 1; i < _size; i++)
                     g.DrawLine(Pens.DarkGray, (int)(i * cellSize), 0, (int)(i * cellSize), h);
 
                 if (_ownerAgent != null && _ownerAgent.States != null)
                 {
-                    for (int i = 0; i < Utils.Size; i++)
+                    for (int i = 0; i < _size; i++)
                     {
                         if (_ownerAgent.States[i] == TerrainState.Water)
                             g.FillRectangle(Brushes.Blue, (int)(i * cellSize + 4), h / 2 + 2, (int)(cellSize - 7), h / 2 - 4);

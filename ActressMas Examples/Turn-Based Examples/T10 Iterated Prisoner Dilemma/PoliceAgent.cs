@@ -31,20 +31,16 @@ namespace IteratedPrisonersDilemma
                 Message m1 = messages.Dequeue();
                 Message m2 = messages.Dequeue();
 
-                Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, m1.Sender, m1.Content);
-                Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, m2.Sender, m2.Content);
+                Console.WriteLine($"\t{m1.Format()}");
+                Console.WriteLine($"\t{m2.Format()}");
 
-                string p; string chosenAction1;
-                Utils.ParseMessage(m1.Content, out p, out chosenAction1); // p = "play"
+                m1.Parse1P(out string p, out string chosenAction1); // p = "play"
+                m2.Parse1P(out p, out string chosenAction2); // p = "play"
 
-                string chosenAction2;
-                Utils.ParseMessage(m1.Content, out p, out chosenAction2); // p = "play"
+                ComputeOutcome(chosenAction1, chosenAction2, out int outcome1, out int outcome2);
 
-                int outcome1, outcome2;
-                ComputeOutcome(chosenAction1, chosenAction2, out outcome1, out outcome2);
-
-                Send(m1.Sender, Utils.Str("outcome", outcome1));
-                Send(m2.Sender, Utils.Str("outcome", outcome2));
+                Send(m1.Sender, $"outcome {outcome1}");
+                Send(m2.Sender, $"outcome {outcome2}");
             }
             catch (Exception ex)
             {
@@ -58,11 +54,13 @@ namespace IteratedPrisonersDilemma
 
             if (action1 == "confess" && action2 == "confess")
             {
-                outcome1 = outcome2 = -3;
+                outcome1 = -3;
+                outcome2 = -3;
             }
             else if (action1 == "deny" && action2 == "deny")
             {
-                outcome1 = outcome2 = -1;
+                outcome1 = -1;
+                outcome2 = -1;
             }
             else if (action1 == "confess" && action2 == "deny")
             {
@@ -74,6 +72,9 @@ namespace IteratedPrisonersDilemma
                 outcome1 = -5;
                 outcome2 = 0;
             }
+
+            outcome1 += 5;
+            outcome2 += 5; // to have positive utilities
         }
     }
 }

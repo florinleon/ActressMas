@@ -14,6 +14,8 @@
  *                                                                        *
  **************************************************************************/
 
+using System;
+
 namespace Shapley
 {
     public class Task
@@ -21,14 +23,20 @@ namespace Shapley
         public int[] DifficultyLevel { get; set; }
         public int Price { get; set; }
 
-        public Task()
+        private Random _rand = new Random();
+        private int _noAttributes, _maxLevel;
+
+        public Task(int noAttributes, int maxLevel)
         {
-            DifficultyLevel = new int[Utils.NoAttributes];
+            _noAttributes = noAttributes;
+            _maxLevel = maxLevel;
+
+            DifficultyLevel = new int[_noAttributes];
             Price = 0;
 
-            for (int i = 0; i < Utils.NoAttributes; i++)
+            for (int i = 0; i < _noAttributes; i++)
             {
-                DifficultyLevel[i] = 6 * (Utils.RandNoGen.Next(Utils.MaxLevel) + 1);
+                DifficultyLevel[i] = 6 * (_rand.Next(_maxLevel) + 1);
                 Price += DifficultyLevel[i];
             }
         }
@@ -36,8 +44,8 @@ namespace Shapley
         public override string ToString()
         {
             string s = "";
-            for (int i = 0; i < Utils.NoAttributes; i++)
-                s += DifficultyLevel[i] + " ";
+            for (int i = 0; i < _noAttributes; i++)
+                s += $"{DifficultyLevel[i]} ";
             return s.Trim();
         }
     }

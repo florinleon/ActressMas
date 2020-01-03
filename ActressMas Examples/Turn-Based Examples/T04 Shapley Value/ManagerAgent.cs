@@ -26,26 +26,29 @@ namespace Shapley
         private List<string> _bids;
         private Task _currentTask;
         private int _taskCount = 0;
-
-        public ManagerAgent()
-        {
-            _agentBidders = new string[Utils.NoBids];
-        }
+        private int _noBids, _noTasks, _noAttributes, _maxLevel;
 
         public override void Setup()
         {
+            _noBids = this.Environment.Memory["NoBids"];
+            _noTasks = this.Environment.Memory["NoTasks"];
+            _noAttributes = this.Environment.Memory["NoAttributes"];
+            _maxLevel = this.Environment.Memory["MaxLevel"];
+
+            _agentBidders = new string[_noBids];
             GenerateNewTask();
         }
 
         private void GenerateNewTask()
         {
-            _currentTask = new Task();
+            _currentTask = new Task(_noAttributes, _maxLevel);
             _taskCount++;
-            SelectAgents();
-            Console.WriteLine("Selected: {0} {1} {2}", _agentBidders[0], _agentBidders[1], _agentBidders[2]);
 
-            for (int i = 0; i < Utils.NoBids; i++)
-                Send(_agentBidders[i], "task " + _currentTask.ToString());
+            SelectAgents();
+            Console.WriteLine($"Selected: {_agentBidders[0]} {_agentBidders[1]} {_agentBidders[2]}");
+
+            for (int i = 0; i < _noBids; i++)
+                Send(_agentBidders[i], $"task {_currentTask}");
 
             _bids = new List<string>();
         }
@@ -57,19 +60,19 @@ namespace Shapley
             _agentBidders[0] = "";
             while ((_agentBidders[0] == "") || !_agentBidders[0].StartsWith("worker"))
             {
-                _agentBidders[0] = this.Environment.RandomAgent(Utils.RandNoGen);
+                _agentBidders[0] = this.Environment.RandomAgent();
             }
 
             _agentBidders[1] = "";
             while (((_agentBidders[1] == "") || (_agentBidders[1] == _agentBidders[0])) || !_agentBidders[1].StartsWith("worker"))
             {
-                _agentBidders[1] = this.Environment.RandomAgent(Utils.RandNoGen);
+                _agentBidders[1] = this.Environment.RandomAgent();
             }
 
             _agentBidders[2] = "";
             while ((((_agentBidders[2] == "") || (_agentBidders[2] == _agentBidders[0])) || (_agentBidders[2] == _agentBidders[1])) || !_agentBidders[2].StartsWith("worker"))
             {
-                _agentBidders[2] = this.Environment.RandomAgent(Utils.RandNoGen);
+                _agentBidders[2] = this.Environment.RandomAgent();
             }
         }
 
@@ -80,11 +83,8 @@ namespace Shapley
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action;
-                    string parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out string parameters);
 
                     switch (action)
                     {
@@ -110,19 +110,19 @@ namespace Shapley
         private void HandleTime(string timeEstimate)
         {
             _bids.Add(timeEstimate);
-            if (_bids.Count == Utils.NoBids)
+            if (_bids.Count == _noBids)
                 AnalyzeCoalitions();
         }
 
         private void HandleResults(string results)
         {
             string[] toks = results.Split();
-            for (int i = 0; i < Utils.NoBids; i++)
+            for (int i = 0; i < _noBids; i++)
             {
                 double r = _currentTask.Price * Convert.ToDouble(toks[i]);
-                Send(_agentBidders[i], Utils.Str("reward", r));
+                Send(_agentBidders[i], $"reward {r}");
             }
-            if (_taskCount >= Utils.NoTasks)
+            if (_taskCount >= _noTasks)
             {
                 Console.WriteLine("Manager has finished");
 
@@ -137,12 +137,12 @@ namespace Shapley
 
         private void AnalyzeCoalitions()
         {
-            int[,] timeToSolve = new int[Utils.NoBids, Utils.NoAttributes];
+            int[,] timeToSolve = new int[_noBids, _noAttributes];
 
-            for (int i = 0; i < Utils.NoBids; i++)
+            for (int i = 0; i < _noBids; i++)
             {
                 string[] toks = _bids[i].Split(new char[0]);
-                for (int j = 0; j < Utils.NoAttributes; j++)
+                for (int j = 0; j < _noAttributes; j++)
                     timeToSolve[i, j] = Convert.ToInt32(toks[j]);
             }
 
@@ -154,7 +154,7 @@ namespace Shapley
             int v23 = (Math.Min(timeToSolve[1, 0], timeToSolve[2, 0]) + Math.Min(timeToSolve[1, 1], timeToSolve[2, 1])) + Math.Min(timeToSolve[1, 2], timeToSolve[2, 2]);
             int v123 = (Min3(timeToSolve[0, 0], timeToSolve[1, 0], timeToSolve[2, 0]) + Min3(timeToSolve[0, 1], timeToSolve[1, 1], timeToSolve[2, 1])) + Min3(timeToSolve[0, 2], timeToSolve[1, 2], timeToSolve[2, 2]);
 
-            Send("shapley", Utils.Str("calculate", v1, v2, v3, v12, v13, v23, v123));
+            Send("shapley", $"calculate {v1} {v2} {v3} {v12} {v13} {v23} {v123}");
         }
 
         private int Min3(int x1, int x2, int x3)

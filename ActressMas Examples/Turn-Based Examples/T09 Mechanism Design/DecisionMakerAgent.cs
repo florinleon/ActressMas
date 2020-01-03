@@ -27,8 +27,8 @@ namespace MechanismDesign
 
         public override void Setup()
         {
-            _netBenefits = new int[Utils.NoBeneficiaries, Utils.NoOptions];
-            _taxes = new int[Utils.NoBeneficiaries];
+            _netBenefits = new int[Settings.NoBeneficiaries, Settings.NoOptions];
+            _taxes = new int[Settings.NoBeneficiaries];
             _answersReceived = 0;
             Broadcast("report");
         }
@@ -40,10 +40,8 @@ namespace MechanismDesign
                 while (messages.Count > 0)
                 {
                     Message message = messages.Dequeue();
-                    Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
-
-                    string action; List<string> parameters;
-                    Utils.ParseMessage(message.Content, out action, out parameters);
+                    Console.WriteLine($"\t{message.Format()}");
+                    message.Parse(out string action, out List<string> parameters);
 
                     switch (action)
                     {
@@ -66,12 +64,12 @@ namespace MechanismDesign
         {
             int agentIndex = (int)(sender[0] - 'a');
 
-            for (int i = 0; i < Utils.NoOptions; i++)
+            for (int i = 0; i < Settings.NoOptions; i++)
                 _netBenefits[agentIndex, i] = Convert.ToInt32(benefits[i]);
 
             _answersReceived++;
 
-            if (_answersReceived == Utils.NoBeneficiaries)
+            if (_answersReceived == Settings.NoBeneficiaries)
                 ComputeTaxes();
         }
 
@@ -80,10 +78,10 @@ namespace MechanismDesign
             int bestOption = -1;
             int largestNetSocialBenefit = -1;
 
-            for (int i = 0; i < Utils.NoOptions; i++)
+            for (int i = 0; i < Settings.NoOptions; i++)
             {
                 int sum = 0;
-                for (int j = 0; j < Utils.NoBeneficiaries; j++)
+                for (int j = 0; j < Settings.NoBeneficiaries; j++)
                     sum += _netBenefits[j, i];
 
                 if (sum > largestNetSocialBenefit)
@@ -93,18 +91,18 @@ namespace MechanismDesign
                 }
             }
 
-            Console.WriteLine("[{0}]: We will install {1} lights", this.Name, bestOption);
+            Console.WriteLine($"[{this.Name}]: We will install {bestOption} lights");
 
-            for (int k = 0; k < Utils.NoBeneficiaries; k++) // without k
+            for (int k = 0; k < Settings.NoBeneficiaries; k++) // without k
             {
                 int bestOptionWithoutK = -1;
                 int largestNSBWithoutK = -1;
                 int previousLargestNSBWithoutK = 0;
 
-                for (int i = 0; i < Utils.NoOptions; i++)
+                for (int i = 0; i < Settings.NoOptions; i++)
                 {
                     int sum = 0;
-                    for (int j = 0; j < Utils.NoBeneficiaries; j++)
+                    for (int j = 0; j < Settings.NoBeneficiaries; j++)
                         if (j != k)
                             sum += _netBenefits[j, i];
 
@@ -121,16 +119,16 @@ namespace MechanismDesign
                 if (bestOption != bestOptionWithoutK)
                 {
                     _taxes[k] = largestNSBWithoutK - previousLargestNSBWithoutK;
-                    Console.WriteLine("[{0}]: {1} is pivotal - from {2} - and its tax is {3}", this.Name, (char)('a' + k), bestOptionWithoutK, _taxes[k]);
+                    Console.WriteLine($"[{this.Name}]: {(char)('a' + k)} is pivotal - from {bestOptionWithoutK} - and its tax is {_taxes[k]}");
                 }
                 else
-                    Console.WriteLine("[{0}]: {1} is not pivotal and its tax is 0", this.Name, (char)('a' + k));
+                    Console.WriteLine($"[{this.Name}]: {(char)('a' + k)} is not pivotal and its tax is 0");
             }
 
-            for (int i = 0; i < Utils.NoBeneficiaries; i++)
+            for (int i = 0; i < Settings.NoBeneficiaries; i++)
             {
                 string name = ((char)('a' + i)).ToString();
-                Send(name, Utils.Str("result", bestOption, _taxes[i]));
+                Send(name, $"result {bestOption} {_taxes[i]}");
             }
         }
     }

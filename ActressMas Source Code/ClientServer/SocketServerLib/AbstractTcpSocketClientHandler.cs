@@ -80,7 +80,7 @@ namespace SocketServerLib.SocketHandler
         /// </summary>
         /// <param name="handler">The socket handler</param>
         /// <param name="stream">The ssl stream</param>
-        /// <param name="useReceiveQueue">If true the message receiving is throw a queue, otherwise each message is handle by a different thread</useReceiveQueue>
+        /// <param name="useReceiveQueue">If true the message receiving is throw a queue, otherwise each message is handle by a different thread</param>
         public AbstractTcpSocketClientHandler(Socket handler, SslStream stream, bool useReceiveQueue)
             : base()
         {
