@@ -73,10 +73,8 @@ namespace ActressMas
         /// <summary>
         /// Converts the object to a string using the Serialize method.
         /// </summary>
-        public override string ToString()
-        {
-            return Serialize(this);
-        }
+        public override string ToString() => 
+            Serialize(this);
 
         /// <summary>
         /// Returns a string of the form "{Sender} -> {Receiver}: {Info} # {Content}"

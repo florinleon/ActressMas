@@ -15,7 +15,6 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ActressMas
 {
@@ -157,12 +156,37 @@ namespace ActressMas
         /// <summary>
         /// Sends a message to a specific agent, identified by name.
         /// </summary>
-        /// <param name="receiver">The agent that will receive the message</param>
+        /// <param name="receiver">The agent that will receive the message. If the agent is in another container, use: agent@container</param>
         /// <param name="content">The content of the message</param>
         /// <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
         public void Send(string receiver, string content, string conversationId = "")
         {
-            var message = new Message(this.Name, receiver, content, conversationId);
+            if (!receiver.Contains("@"))
+            {
+                var message = new Message(this.Name, receiver, content, conversationId);
+                this.Environment.Send(message);
+            }
+            else // "long-distance" message
+            {
+                string[] toks = receiver.Split('@');
+                string container = toks[1];
+                var message = new Message(this.Name, receiver, content, conversationId);
+                this.Environment.SendLD(container, message);
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to a specific agent, identified by name.
+        /// </summary>
+        /// <param name="receiver">The agent that will receive the message</param>
+        /// <param name="contentObj">The content of the message</param>
+        /// <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        public void Send(string receiver, dynamic contentObj, string conversationId = "")
+        {
+            if (receiver.Contains("@"))
+                throw new System.Exception("Sending objects to remote agents is not supported. Serialize the object and send it as a string.");
+
+            var message = new Message(this.Name, receiver, contentObj, conversationId);
             this.Environment.Send(message);
         }
 
@@ -177,19 +201,6 @@ namespace ActressMas
             foreach (string a in receivers)
                 Send(a, content, conversationId);
         }
-
-        /// <summary>
-        /// Sends a message to a specific agent, identified by name.
-        /// </summary>
-        /// <param name="receiver">The agent that will receive the message</param>
-        /// <param name="contentObj">The content of the message</param>
-        /// <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
-        public void Send(string receiver, dynamic contentObj, string conversationId = "")
-        {
-            var message = new Message(this.Name, receiver, contentObj, conversationId);
-            this.Environment.Send(message);
-        }
-
         /// <summary>
         /// Sends a message to a specific set of agents, identified by name.
         /// </summary>

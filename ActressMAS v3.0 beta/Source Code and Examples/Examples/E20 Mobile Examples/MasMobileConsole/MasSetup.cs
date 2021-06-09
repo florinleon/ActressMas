@@ -36,12 +36,12 @@ namespace MasMobileConsole
             {
                 case "Container1":
                     var m = new MobileAgent();
-                    env.Add(m, "Container1.mobile");
+                    env.Add(m, "mobile-k1");
 
                     for (int i = 1; i <= 1; i++)
                     {
                         var a = new StaticAgent();
-                        env.Add(a, $"Container1.a{i}");
+                        env.Add(a, $"a{i}-k1");
                     }
                     break;
 
@@ -49,7 +49,7 @@ namespace MasMobileConsole
                     for (int i = 1; i <= 2; i++)
                     {
                         var a = new StaticAgent();
-                        env.Add(a, $"Container2.b{i}");
+                        env.Add(a, $"b{i}-k1");
                     }
                     break;
 
@@ -57,7 +57,7 @@ namespace MasMobileConsole
                     for (int i = 1; i <= 3; i++)
                     {
                         var a = new StaticAgent();
-                        env.Add(a, $"Container3.c{i}");
+                        env.Add(a, $"c{i}-k3");
                     }
                     break;
 

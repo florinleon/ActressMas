@@ -13,6 +13,7 @@
  *                                                                        *
  **************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,6 +22,7 @@ namespace ActressMas
     /// <summary>
     /// A message that the agents use to communicate. In an agent-based system, the communication between the agents is exclusively performed by exchanging messages.
     /// </summary>
+    [Serializable]
     public class Message
     {
         /// <summary>
@@ -114,7 +116,7 @@ namespace ActressMas
         /// <summary>
         /// Returns a string of the form "[Sender -> Receiver]: Content"
         /// </summary>
-        public string Format() => 
+        public string Format() =>
             $"[{Sender} -> {Receiver}]: {Content}";
 
         /// <summary>

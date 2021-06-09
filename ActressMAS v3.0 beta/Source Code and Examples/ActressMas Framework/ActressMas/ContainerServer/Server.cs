@@ -183,7 +183,6 @@ namespace ActressMas
             if (message.Sender == "Server")
                 return;
 
-
             RaiseNewTextEvent($"Message received [{message.Format()}]");
 
             if (message.Receiver != "Server" && message.Info == "Request Move Agent")
@@ -214,7 +213,7 @@ namespace ActressMas
                     DisplayContainerList();
                 }
             }
-            else if (message.Info == "Request Move Agent")
+            else if (message.Info == "Request Move Agent" || message.Info == "Send LD Message")
             {
                 foreach (string s in _containerNames.Values)
                 {
@@ -250,7 +249,6 @@ namespace ActressMas
         {
             try
             {
-
                 RaiseNewTextEvent($"Sending message [{message.Format()}]");
 
                 string s = ContainerMessage.Serialize(message);

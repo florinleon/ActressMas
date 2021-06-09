@@ -16,7 +16,7 @@
 using ActressMas;
 using System.Windows.Forms;
 
-namespace MasMobileGui
+namespace LongDistanceMessages
 {
     public class Global
     {
@@ -40,30 +40,13 @@ namespace MasMobileGui
             switch (home)
             {
                 case "Container1":
-                    var m = new MobileAgent();
-                    env.Add(m, "mobile-k1");
-
-                    for (int i = 1; i <= 1; i++)
-                    {
-                        var a = new StaticAgent();
-                        env.Add(a, $"a{i}-k1");
-                    }
+                    var m = new PingAgent();
+                    env.Add(m, "ping-agent");
                     break;
 
                 case "Container2":
-                    for (int i = 1; i <= 2; i++)
-                    {
-                        var a = new StaticAgent();
-                        env.Add(a, $"b{i}-k2");
-                    }
-                    break;
-
-                case "Container3":
-                    for (int i = 1; i <= 3; i++)
-                    {
-                        var a = new StaticAgent();
-                        env.Add(a, $"c{i}-k3");
-                    }
+                    var a = new PongAgent();
+                    env.Add(a, "pong-agent");
                     break;
 
                 default:

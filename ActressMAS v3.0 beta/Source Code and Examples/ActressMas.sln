@@ -103,6 +103,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife", "Examples\E13 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendingObjects", "Examples\E00 Simple Examples\SendingObjects\SendingObjects.csproj", "{21F31003-FFD5-4D3F-93BD-801A932AF880}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LongDistanceMessages", "Examples\E20 Mobile Examples\LongDistanceMessages\LongDistanceMessages.csproj", "{C3ACBF50-CEFA-4472-B226-4B8D656F02FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -229,6 +231,10 @@ Global
 		{21F31003-FFD5-4D3F-93BD-801A932AF880}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21F31003-FFD5-4D3F-93BD-801A932AF880}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21F31003-FFD5-4D3F-93BD-801A932AF880}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3ACBF50-CEFA-4472-B226-4B8D656F02FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3ACBF50-CEFA-4472-B226-4B8D656F02FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3ACBF50-CEFA-4472-B226-4B8D656F02FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3ACBF50-CEFA-4472-B226-4B8D656F02FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -282,6 +288,7 @@ Global
 		{713026B6-25E3-4AF9-B17C-BAEA1BB17571} = {DADA0A40-1F45-4527-8449-2200BC9DFD02}
 		{F353F39E-FBC2-423F-B504-2CF5E9B8EC71} = {E2203DCE-109C-4977-9EDC-E656A10262D7}
 		{21F31003-FFD5-4D3F-93BD-801A932AF880} = {22DFD2AA-0E88-4370-BC69-69FC0F60BFBC}
+		{C3ACBF50-CEFA-4472-B226-4B8D656F02FD} = {5BDD26C2-C5AD-42F2-9E46-F9F68393BF6E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6FFA0D6-CD02-443F-9ED1-80D516CAC4DB}

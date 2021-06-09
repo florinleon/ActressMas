@@ -89,10 +89,9 @@ namespace ActressMas
 
             RaiseNewTextEvent("Running MAS...\r\n");
 
-            Thread t = new Thread(new ThreadStart(() => mas.RunMas(environment)));
+            var t = new Thread(new ThreadStart(() => mas.RunMas(environment)));
             t.Start();
         }
-
 
         /// <summary>
         /// Tries to connect to the server and activates the container.
@@ -113,7 +112,7 @@ namespace ActressMas
                     return;
                 }
 
-                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(_serverIP), _serverPort);
+                var ipEndPoint = new IPEndPoint(IPAddress.Parse(_serverIP), _serverPort);
 
                 RaiseNewTextEvent("Container connecting to server...");
 
@@ -140,14 +139,28 @@ namespace ActressMas
 
         internal void AgentHasArrived(string agentState)
         {
-            AgentState state = ContainerMessage.Deserialize(agentState) as AgentState;
+            var state = ContainerMessage.Deserialize(agentState) as AgentState;
             _environment.AgentHasArrived(state);
+        }
+
+        internal void LDMessageReceived(string content)
+        {
+            var message = ContainerMessage.Deserialize(content) as Message;
+            _environment.LDMessageReceived(message);
         }
 
         internal void MoveAgent(AgentState state, string destination)
         {
             string serializedAgentState = ContainerMessage.Serialize(state);
             var cm = new ContainerMessage(_name, destination, "Request Move Agent", serializedAgentState);
+            Send(cm);
+        }
+
+        internal void SendLDAgentMessage(string receiverContainer, Message message)
+        {
+            message.Sender = $"{message.Sender}@{this.Name}";
+            string serializedMessage = ContainerMessage.Serialize(message);
+            var cm = new ContainerMessage(_name, receiverContainer, "Send LD Message", serializedMessage);
             Send(cm);
         }
 
@@ -168,9 +181,7 @@ namespace ActressMas
             try
             {
                 RaiseNewTextEvent("Container connected to server.");
-
                 Register();
-
                 RaiseNewTextEvent($"{_name} registered.");
             }
             catch (Exception ex)
@@ -183,12 +194,11 @@ namespace ActressMas
         {
             try
             {
-                BasicMessage receivedMessage = (BasicMessage)message;
+                var receivedMessage = (BasicMessage)message;
                 byte[] buffer = receivedMessage.GetBuffer();
                 string s = ASCIIEncoding.Unicode.GetString(buffer);
 
-                var deserializedMessage = ContainerMessage.Deserialize(s) as ContainerMessage;
-                if (deserializedMessage != null)
+                if (ContainerMessage.Deserialize(s) is ContainerMessage deserializedMessage)
                     ProcessMessage(deserializedMessage);
             }
             catch (Exception ex)
@@ -205,10 +215,6 @@ namespace ActressMas
             {
                 RaiseNewTextEvent("Container name refused by server.\r\n");
             }
-            else if (message.Info == "Request Move Agent")
-            {
-                AgentHasArrived(message.Content);
-            }
             else if (message.Sender == "Server" && message.Info == "Inform Containers")
             {
                 string[] toks = message.Content.Split();
@@ -218,6 +224,14 @@ namespace ActressMas
                     if (t != "" && t != " ")
                         _allContainers.Add(t);
                 }
+            }
+            else if (message.Info == "Request Move Agent")
+            {
+                AgentHasArrived(message.Content);
+            }
+            else if (message.Info == "Send LD Message")
+            {
+                LDMessageReceived(message.Content);
             }
         }
 
@@ -246,7 +260,7 @@ namespace ActressMas
 
                 string s = ContainerMessage.Serialize(message);
                 byte[] buffer = ASCIIEncoding.Unicode.GetBytes(s);
-                BasicMessage serializedMessage = new BasicMessage(_clientGuid, buffer);
+                var serializedMessage = new BasicMessage(_clientGuid, buffer);
                 _client.SendAsync(serializedMessage);
             }
             catch (Exception ex)

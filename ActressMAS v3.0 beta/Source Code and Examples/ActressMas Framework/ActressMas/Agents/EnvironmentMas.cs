@@ -26,13 +26,17 @@ namespace ActressMas
     /// </summary>
     public class EnvironmentMas
     {
+        protected Container _container = null;
         private int _delayAfterTurn = 0;
         private int _noTurns = 0;
         private bool _parallel = true;
         private Random _rand;
         private bool _randomOrder = true;
 
-        protected Container _container = null;
+        /// <summary>
+        /// The agents in the environment
+        /// </summary>
+        private AgentCollection Agents;
 
         /// <summary>
         /// Initializes a new instance of the EnvironmentMas class.
@@ -77,12 +81,6 @@ namespace ActressMas
         /// The number of agents in the environment
         /// </summary>
         public int NoAgents => Agents.Count;
-
-        /// <summary>
-        /// The agents in the environment
-        /// </summary>
-        private AgentCollection Agents;
-
         /// <summary>
         /// Adds an agent to the environment. The agent should already have a name and its name should be unique.
         /// </summary>
@@ -126,6 +124,29 @@ namespace ActressMas
         /// </summary>
         public List<string> AllContainers() =>
             _container.AllContainers();
+
+        /// <summary>
+        /// Continues the simulation for an additional number of turns, after an initial simulation has finished.
+        /// The simulation may stop earlier if there are no more agents in the environment.
+        /// If the number of turns is 0, the simulation runs indefinitely, or until there are no more agents in the environment.
+        /// </summary>
+        /// <param name="noTurns">The maximum number of turns of the continued simulation</param>
+        public void Continue(int noTurns = 0)
+        {
+            int turn = 0;
+
+            while (true)
+            {
+                RunTurn(turn);
+                turn++;
+                if (noTurns != 0 && turn >= noTurns) // noTurns = 0 => infinite
+                    break;
+                if (Agents.Count == 0)
+                    break;
+            }
+
+            SimulationFinished();
+        }
 
         /// <summary>
         /// Returns a list with the names of all the agents that contain a certain string.
@@ -193,9 +214,23 @@ namespace ActressMas
         public void Send(Message message)
         {
             string receiverName = message.Receiver;
-
             if (Agents.ContainsKey(receiverName))
                 Agents[receiverName].Post(message);
+        }
+
+        /// <summary>
+        /// Sends a "long-distance" message to a remote agent in another container.
+        /// </summary>
+        /// <param name="receiverContainer">The destination container</param>
+        /// <param name="message">The message to be sent</param>
+        public void SendLD(string receiverContainer, Message message) =>
+            _container.SendLDAgentMessage(receiverContainer, message);
+
+        /// <summary>
+        /// A method that may be optionally overriden to perform additional processing after the simulation has finished.
+        /// </summary>
+        public virtual void SimulationFinished()
+        {
         }
 
         /// <summary>
@@ -216,6 +251,101 @@ namespace ActressMas
             }
 
             SimulationFinished();
+        }
+
+        /// <summary>
+        /// A method that may be optionally overriden to perform additional processing after a turn of the simulation has finished.
+        /// </summary>
+        /// <param name="turn">The turn that has just finished</param>
+        public virtual void TurnFinished(int turn)
+        {
+        }
+
+        internal void AgentHasArrived(AgentState agentState)
+        {
+            Agent a = Activator.CreateInstance(agentState.AgentType) as Agent;
+            a.LoadState(agentState);
+            a.Name = agentState.Name;
+            a.MustRunSetup = true;
+            Add(a);
+        }
+
+        internal List<ObservableAgent> GetListOfObservableAgents(string perceivingAgentName, Func<Dictionary<string, string>, bool> PerceptionFilter)
+        {
+            var observableAgentList = new List<ObservableAgent>();
+
+            var agentsNames = Agents.Keys.ToList();
+
+            for (int i = 0; i < agentsNames.Count; i++)
+            {
+                if (Agents.Keys.Contains(agentsNames[i]))
+                {
+                    Agent a = Agents[agentsNames[i]];
+
+                    if (a == null)
+                        continue;
+
+                    if (a.Name == perceivingAgentName)
+                        continue;
+
+                    if (a.Observables.Count == 0)
+                        continue;
+
+                    a.Observables["Name"] = a.Name;
+
+                    if (PerceptionFilter(a.Observables))
+                        observableAgentList.Add(new ObservableAgent(a.Observables));
+                }
+            }
+
+            return observableAgentList;
+        }
+
+        internal void LDMessageReceived(Message message)
+        {
+            string[] toks = message.Receiver.Split('@');
+            message.Receiver = toks[0];
+            Send(message);
+        }
+        internal void MoveAgent(AgentState agentState, string destination)
+        {
+            Remove(agentState.Name);
+            _container.MoveAgent(agentState, destination);
+        }
+
+        internal void SetContainer(Container container) =>
+            _container = container;
+
+        private void ExecuteSeeAct(Agent a)
+        {
+            if (a.UsingObservables)
+                a.InternalSee();
+            a.InternalAct();
+        }
+
+        private void ExecuteSetup(Agent a)
+        {
+            a.Setup();
+            a.MustRunSetup = false;
+        }
+
+        private int[] RandomPermutation(int n)
+        {
+            // Fisher-Yates shuffle
+
+            int[] numbers = new int[n];
+            for (int i = 0; i < n; i++)
+                numbers[i] = i;
+
+            while (n > 1)
+            {
+                int k = _rand.Next(n--);
+                int temp = numbers[n]; numbers[n] = numbers[k]; numbers[k] = temp;
+            }
+
+            return numbers;
+
+            // much faster than Enumerable.Range(0, n).OrderBy(x => _rand.Next()).ToArray();
         }
 
         private void RunTurn(int turn)
@@ -273,62 +403,6 @@ namespace ActressMas
 
             TurnFinished(turn);
         }
-
-        private void ExecuteSetup(Agent a)
-        {
-            a.Setup();
-            a.MustRunSetup = false;
-        }
-
-        private void ExecuteSeeAct(Agent a)
-        {
-            if (a.UsingObservables)
-                a.InternalSee();
-            a.InternalAct();
-        }
-
-        /// <summary>
-        /// Continues the simulation for an additional number of turns, after an initial simulation has finished.
-        /// The simulation may stop earlier if there are no more agents in the environment.
-        /// If the number of turns is 0, the simulation runs indefinitely, or until there are no more agents in the environment.
-        /// </summary>
-        /// <param name="noTurns">The maximum number of turns of the continued simulation</param>
-        public void Continue(int noTurns = 0)
-        {
-            int turn = 0;
-
-            while (true)
-            {
-                RunTurn(turn);
-                turn++;
-                if (noTurns != 0 && turn >= noTurns) // noTurns = 0 => infinite
-                    break;
-                if (Agents.Count == 0)
-                    break;
-            }
-
-            SimulationFinished();
-        }
-
-        private int[] RandomPermutation(int n)
-        {
-            // Fisher-Yates shuffle
-
-            int[] numbers = new int[n];
-            for (int i = 0; i < n; i++)
-                numbers[i] = i;
-
-            while (n > 1)
-            {
-                int k = _rand.Next(n--);
-                int temp = numbers[n]; numbers[n] = numbers[k]; numbers[k] = temp;
-            }
-
-            return numbers;
-
-            // much faster than Enumerable.Range(0, n).OrderBy(x => _rand.Next()).ToArray();
-        }
-
         private int[] SortedPermutation(int n)
         {
             int[] numbers = new int[n];
@@ -338,69 +412,5 @@ namespace ActressMas
 
             // faster than Enumerable.Range(0, n).ToArray();
         }
-
-        /// <summary>
-        /// A method that may be optionally overriden to perform additional processing after a turn of the simulation has finished.
-        /// </summary>
-        /// <param name="turn">The turn that has just finished</param>
-        public virtual void TurnFinished(int turn)
-        {
-        }
-
-        /// <summary>
-        /// A method that may be optionally overriden to perform additional processing after the simulation has finished.
-        /// </summary>
-        public virtual void SimulationFinished()
-        {
-        }
-
-        internal List<ObservableAgent> GetListOfObservableAgents(string perceivingAgentName, Func<Dictionary<string, string>, bool> PerceptionFilter)
-        {
-            var observableAgentList = new List<ObservableAgent>();
-
-            var agentsNames = Agents.Keys.ToList();
-
-            for (int i = 0; i < agentsNames.Count; i++)
-            {
-                if (Agents.Keys.Contains(agentsNames[i]))
-                {
-                    Agent a = Agents[agentsNames[i]];
-
-                    if (a == null)
-                        continue;
-
-                    if (a.Name == perceivingAgentName)
-                        continue;
-
-                    if (a.Observables.Count == 0)
-                        continue;
-
-                    a.Observables["Name"] = a.Name;
-
-                    if (PerceptionFilter(a.Observables))
-                        observableAgentList.Add(new ObservableAgent(a.Observables));
-                }
-            }
-
-            return observableAgentList;
-        }
-
-        internal void MoveAgent(AgentState agentState, string destination)
-        {
-            Remove(agentState.Name);
-            _container.MoveAgent(agentState, destination);
-        }
-
-        internal void AgentHasArrived(AgentState agentState)
-        {
-            Agent a = Activator.CreateInstance(agentState.AgentType) as Agent;
-            a.LoadState(agentState);
-            a.Name = agentState.Name;
-            a.MustRunSetup = true;
-            Add(a);
-        }
-
-        internal void SetContainer(Container container) =>
-            _container = container;
     }
 }
