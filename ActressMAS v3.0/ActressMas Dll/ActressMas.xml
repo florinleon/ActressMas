@@ -1,0 +1,2065 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ActressMas</name>
+    </assembly>
+    <members>
+        <member name="T:ActressMas.AgentState">
+            <summary>
+            The class that stores the serializable state of the agent when it moves. It is the Memento in the Memento design pattern,
+            while the specific Agent class whose state is saved and restored is the Originator. This class should be inherited to add
+            all the serializable fields specific to a particular agent.
+            For example, a concurrent agent cannot be serialized directly because MailboxProcessor is not serializable
+            </summary>
+        </member>
+        <member name="P:ActressMas.AgentState.AgentType">
+            <summary>
+            The agent class needed in order to instantiate the agent object after a move
+            </summary>
+        </member>
+        <member name="P:ActressMas.AgentState.Name">
+            <summary>
+            The agent name
+            </summary>
+        </member>
+        <member name="T:ActressMas.Agent">
+            <summary>
+            The base class for an agent that runs on a turn-based manner in its environment. You must create your own agent classes derived from this abstract class.
+            </summary>
+        </member>
+        <member name="P:ActressMas.Agent.Environment">
+            <summary>
+            The environment in which the agent runs.
+            </summary>
+        </member>
+        <member name="P:ActressMas.Agent.Name">
+            <summary>
+            The name of the agent. Each agent must have a unique name in its environment. Most operations are performed using agent names rather than agent objects.
+            </summary>
+        </member>
+        <member name="P:ActressMas.Agent.Observables">
+            <summary>
+            The properties of an agent which can be visible from the outside, i.e. perceivable by other agents.
+            </summary>
+        </member>
+        <member name="P:ActressMas.Agent.UsingObservables">
+            <summary>
+            Whether the agent uses the observable feature. The default value is false and it must be explicitly set to true before using observables.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Agent.Act(ActressMas.Message)">
+            <summary>
+            This is the method that is called when the agent receives a message and is activated. This is where the main logic of the agent should be placed.
+            </summary>
+            <param name="message">The message that the agent has received and should respond to</param>
+        </member>
+        <member name="M:ActressMas.Agent.ActDefault">
+            <summary>
+            This is the method that is called when the agent does not receive any messages at the end of a turn.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Agent.Broadcast(System.String,System.Boolean,System.String)">
+            <summary>
+            Sends a message to all the agents in the environment.
+            </summary>
+            <param name="content">The content of the message</param>
+            <param name="includeSender">Whether the sender itself receives the message or not</param>
+            <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Agent.Broadcast(System.Object,System.Boolean,System.String)">
+            <summary>
+            Sends a message to all the agents in the environment.
+            </summary>
+            <param name="contentObj">The content of the message</param>
+            <param name="includeSender">Whether the sender itself receives the message or not</param>
+            <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Agent.CanMove(System.String)">
+            <summary>
+            Tests whether the agent can move to a certain remote container.
+            </summary>
+            <param name="destination">The name of the container that the agent wants to move to</param>
+        </member>
+        <member name="M:ActressMas.Agent.LoadState(ActressMas.AgentState)">
+            <summary>
+            Imports the state of the agent, after it has moved from another container.
+            </summary>
+            <param name="state">The state of the agent</param>
+        </member>
+        <member name="M:ActressMas.Agent.Move(System.String)">
+            <summary>
+            The method that should be called when the agent wants to move to a different container.
+            </summary>
+            <param name="destination">The name of the container that the agent wants to move to</param>
+        </member>
+        <member name="M:ActressMas.Agent.PerceptionFilter(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            The function that identifies which properties and conditions must be satisfied by the Observables of other agents
+            in order to be perceived by the observing agent. It must return true for the observables that will be available to the agent.
+            </summary>
+            <param name="observed">A dictionary with name-value pairs of observed properties</param>
+        </member>
+        <member name="M:ActressMas.Agent.SaveState">
+            <summary>
+            Exports the state of the agent, so it can be serialized when moving to another container.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Agent.See(System.Collections.Generic.List{ActressMas.ObservableAgent})">
+            <summary>
+            This method provides the agents whose observable properties are visible. It is called once a turn, before Act.
+            </summary>
+            <param name="observableAgents">The list of agents which have at least one observable property desired by the observing agent. The desired properties are also available, from the ObservableAgent objects.</param>
+        </member>
+        <member name="M:ActressMas.Agent.Send(System.String,System.String,System.String)">
+            <summary>
+            Sends a message to a specific agent, identified by name.
+            </summary>
+            <param name="receiver">The agent that will receive the message. If the agent is in another container, use: agent@container</param>
+            <param name="content">The content of the message</param>
+            <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Agent.Send(System.String,System.Object,System.String)">
+            <summary>
+            Sends a message to a specific agent, identified by name.
+            </summary>
+            <param name="receiver">The agent that will receive the message</param>
+            <param name="contentObj">The content of the message</param>
+            <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Agent.SendToMany(System.Collections.Generic.List{System.String},System.String,System.String)">
+            <summary>
+            Sends a message to a specific set of agents, identified by name.
+            </summary>
+            <param name="receivers">The list of agents that will receive the message</param>
+            <param name="content">The content of the message</param>
+            <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Agent.SendToMany(System.Collections.Generic.List{System.String},System.Object,System.String)">
+            <summary>
+            Sends a message to a specific set of agents, identified by name.
+            </summary>
+            <param name="receivers">The list of agents that will receive the message</param>
+            <param name="contentObj">The content of the message</param>
+            <param name="conversationId">A conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Agent.Setup">
+            <summary>
+            This method is called as the first turn or right after an agent has moved to a new container.
+            It is similar to the constructor of the class, but it may be used for agent-related logic, e.g. for sending initial message(s).
+            </summary>
+        </member>
+        <member name="M:ActressMas.Agent.Stop">
+            <summary>
+            Stops the execution of the agent and removes it from the environment. Use the Stop method instead of Environment.Remove
+            when the decision to be stopped belongs to the agent itself.
+            </summary>
+        </member>
+        <member name="T:ActressMas.EnvironmentMas">
+            <summary>
+            An abstract base class for the multiagent environment, where all the agents are executed.
+            </summary>
+        </member>
+        <member name="F:ActressMas.EnvironmentMas.Agents">
+            <summary>
+            The agents in the environment
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.#ctor(System.Int32,System.Int32,System.Boolean,System.Random,System.Boolean)">
+            <summary>
+            Initializes a new instance of the EnvironmentMas class.
+            </summary>
+            <param name="noTurns">The maximum number of turns of the simulation. Setup is considered to be the first turn. The simulation may stop earlier if there are no more agents in the environment. If the number of turns is 0, the simulation runs indefinitely, or until there are no more agents in the environment.</param>
+            <param name="delayAfterTurn">A delay (in miliseconds) after each turn.</param>
+            <param name="randomOrder">Whether the agents should be run in a random order (different each turn) or sequentially. If the execution is parallel, agents are always run in random order.</param>
+            <param name="rand">A random number generator for non-deterministic but repeatable experiments. It should instantiated using a seed. If it is null, a new Random object is created and used.</param>
+            <param name="parallel">Whether agent behaviors are executed in parallel or sequentially. The code of a single agent in a turn is always executed sequentially.</param>
+        </member>
+        <member name="P:ActressMas.EnvironmentMas.ContainerName">
+            <summary>
+            The name of the container that contains the environment. If the container is not set or not connected to the server,
+            this method will return the empty string.
+            </summary>
+        </member>
+        <member name="P:ActressMas.EnvironmentMas.Memory">
+            <summary>
+            An object that can be used as a shared memory by the agents.
+            </summary>
+        </member>
+        <member name="P:ActressMas.EnvironmentMas.NoAgents">
+            <summary>
+            The number of agents in the environment
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Add(ActressMas.Agent)">
+            <summary>
+            Adds an agent to the environment. The agent should already have a name and its name should be unique.
+            </summary>
+            <param name="agent">The concurrent agent that will be added</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Add(ActressMas.Agent,System.String)">
+            <summary>
+            Adds an agent to the environment. Its name should be unique.
+            </summary>
+            <param name="agent">The concurrent agent that will be added</param>
+            <param name="name">The name of the agent</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.AllAgents">
+            <summary>
+            Returns a list with the names of all the agents.
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.AllContainers">
+            <summary>
+            Returns a list with the names of all the containers in the distributed system. This list may change over time,
+            as some new containers may get connected and existing ones may disconnect.
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Continue(System.Int32)">
+            <summary>
+            Continues the simulation for an additional number of turns, after an initial simulation has finished.
+            The simulation may stop earlier if there are no more agents in the environment.
+            If the number of turns is 0, the simulation runs indefinitely, or until there are no more agents in the environment.
+            </summary>
+            <param name="noTurns">The maximum number of turns of the continued simulation</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.FilteredAgents(System.String)">
+            <summary>
+            Returns a list with the names of all the agents that contain a certain string.
+            </summary>
+            <param name="nameFragment">The name fragment that the agent names should contain</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.RandomAgent">
+            <summary>
+            Returns the name of a randomly selected agent from the environment
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.RandomAgent(System.Random)">
+            <summary>
+            Returns the name of a randomly selected agent from the environment using a predefined random number generator. This is useful for experiments
+            involving non-determinism, but which should be repeatable for analysis and debugging.
+            </summary>
+            <param name="rand">The random number generator which should be non-null and instantiated using a seed</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Remove(ActressMas.Agent)">
+            <summary>
+            Stops the execution of the agent and removes it from the environment. Use the Remove method instead of Agent.Stop
+            when the decision to stop an agent does not belong to the agent itself, but to some other agent or to an external factor.
+            </summary>
+            <param name="agent">The agent to be removed</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Remove(System.String)">
+            <summary>
+            Stops the execution of the agent identified by name and removes it from the environment. Use the Remove method instead of Agent.Stop
+            when the decision to stop an agent does not belong to the agent itself, but to some other agent or to an external factor.
+            </summary>
+            <param name="agentName">The name of the agent to be removed</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Send(ActressMas.Message)">
+            <summary>
+            Sends a message from the outside of the multiagent system. Whenever possible, the agents should use the Send method of their own class,
+            not the Send method of the environment. This method can also be used to simulate a forwarding behavior.
+            </summary>
+            <param name="message">The message to be sent</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.SendRemote(System.String,ActressMas.Message)">
+            <summary>
+            Sends a message to a remote agent in another container.
+            </summary>
+            <param name="receiverContainer">The destination container</param>
+            <param name="message">The message to be sent</param>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.SimulationFinished">
+            <summary>
+            A method that may be optionally overriden to perform additional processing after the simulation has finished.
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.Start">
+            <summary>
+            Starts the simulation.
+            </summary>
+        </member>
+        <member name="M:ActressMas.EnvironmentMas.TurnFinished(System.Int32)">
+            <summary>
+            A method that may be optionally overriden to perform additional processing after a turn of the simulation has finished.
+            </summary>
+            <param name="turn">The turn that has just finished</param>
+        </member>
+        <member name="T:ActressMas.ObservableAgent">
+            <summary>
+            The class that represents the observable properties of an agent. They depend on the set of Observables properties of an agent and
+            on the PerceptionFilter function of an agent who wants to observe other agents.
+            </summary>
+        </member>
+        <member name="P:ActressMas.ObservableAgent.Observed">
+            <summary>
+            The properties of the observed agent which are visible to the agent who registers to see them.
+            They are a subset of the full Observables properties of an agent.
+            </summary>
+        </member>
+        <member name="M:ActressMas.ObservableAgent.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ObservableAgent class.
+            </summary>
+            <param name="name">The name of the observable agent</param>
+        </member>
+        <member name="M:ActressMas.ObservableAgent.#ctor(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Initializes a new instance of the ObservableAgent class.
+            </summary>
+            <param name="name">The name of the observable agent</param>
+            <param name="observable">A collection of observable properties</param>
+        </member>
+        <member name="M:ActressMas.ObservableAgent.#ctor(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Initializes a new instance of the ObservableAgent class.
+            </summary>
+            <param name="observable">A collection of observable properties</param>
+        </member>
+        <member name="T:ActressMas.ContainerMessage">
+            <summary>
+            A message that the containers use to communicate.
+            </summary>
+        </member>
+        <member name="M:ActressMas.ContainerMessage.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the ContainerMessage class.
+            </summary>
+            <param name="sender">The name of the container that sends the message</param>
+            <param name="receiver">The name of the container that needs to receive the message</param>
+            <param name="info">The high-level subject of the message</param>
+            <param name="content">The low-level content of the message, i.e. additional information</param>
+        </member>
+        <member name="M:ActressMas.ContainerMessage.Deserialize(System.String)">
+            <summary>
+            Deserializes an object.
+            </summary>
+        </member>
+        <member name="M:ActressMas.ContainerMessage.Serialize(System.Object)">
+            <summary>
+            Serializes an object.
+            </summary>
+        </member>
+        <member name="M:ActressMas.ContainerMessage.ToString">
+            <summary>
+            Converts the object to a string using the Serialize method.
+            </summary>
+        </member>
+        <member name="M:ActressMas.ContainerMessage.Format">
+            <summary>
+            Returns a string of the form "{Sender} -> {Receiver}: {Info} # {Content}"
+            </summary>
+        </member>
+        <member name="T:ActressMas.Container">
+            <summary>
+            A container contains an environment and is connected to a server. It facilitates the move of agents in a distributed system.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Container.#ctor(System.String,System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the Container class.
+            </summary>
+            <param name="serverIP">The IP address of the server</param>
+            <param name="serverPort">The port number of the server</param>
+            <param name="name">The name of the container. The name of the container should be unique and cannot contain spaces.</param>
+        </member>
+        <member name="E:ActressMas.Container.NewText">
+            <summary>
+            An event handler for the ongoing messages provided by the container.
+            </summary>
+        </member>
+        <member name="P:ActressMas.Container.Name">
+            <summary>
+            The name of the container. If the container is not connected to the server,
+            this method will return the empty string.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Container.AllContainers">
+            <summary>
+            Returns a list with the names of all the containers in the distributed system. This list may change over time,
+            as some new containers may get connected and existing ones may disconnect.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Container.RunMas(ActressMas.EnvironmentMas,ActressMas.RunnableMas)">
+            <summary>
+            Starts the execution of the multiagent system defined in the environment.
+            </summary>
+            <param name="environment">The multiagent environment</param>
+            <param name="mas">The multiagent system to be executed</param>
+        </member>
+        <member name="M:ActressMas.Container.Start">
+            <summary>
+            Tries to connect to the server and activates the container.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Container.Stop">
+            <summary>
+            Disconnects from the server and deactivates the container.
+            </summary>
+        </member>
+        <member name="T:ActressMas.Info">
+            <summary>
+            Information about ActressMas version
+            </summary>
+        </member>
+        <member name="F:ActressMas.Info.Version">
+            <summary>
+            ActressMas current version
+            </summary>
+        </member>
+        <member name="T:ActressMas.RunnableMas">
+            <summary>
+            An abstract class which should be derived in order to specify the multiagent system with mobile agents that will be run in the environment of a container.
+            </summary>
+        </member>
+        <member name="M:ActressMas.RunnableMas.RunMas(ActressMas.EnvironmentMas)">
+            <summary>
+            Starts the execution of a multiagent environment within a container
+            </summary>
+            <param name="env">The multiagent environment</param>
+        </member>
+        <member name="T:ActressMas.Message">
+            <summary>
+            A message that the agents use to communicate. In an agent-based system, the communication between the agents is exclusively performed by exchanging messages.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Message.#ctor">
+            <summary>
+            Initializes a new instance of the Message class with an empty message.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Message.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the Message class.
+            </summary>
+            <param name="sender">The name of the agent that sends the message</param>
+            <param name="receiver">The name of the agent that needs to receive the message</param>
+            <param name="content">The content of the message</param>
+        </member>
+        <member name="M:ActressMas.Message.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the Message class.
+            </summary>
+            <param name="sender">The name of the agent that sends the message</param>
+            <param name="receiver">The name of the agent that needs to receive the message</param>
+            <param name="content">The content of the message</param>
+            <param name="conversationId">The conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="M:ActressMas.Message.#ctor(System.String,System.String,System.Object)">
+            <summary>
+            Initializes a new instance of the Message class.
+            </summary>
+            <param name="sender">The name of the agent that sends the message</param>
+            <param name="receiver">The name of the agent that needs to receive the message</param>
+            <param name="contentObj">The content of the message</param>
+        </member>
+        <member name="M:ActressMas.Message.#ctor(System.String,System.String,System.Object,System.String)">
+            <summary>
+            Initializes a new instance of the Message class.
+            </summary>
+            <param name="sender">The name of the agent that sends the message</param>
+            <param name="receiver">The name of the agent that needs to receive the message</param>
+            <param name="contentObj">The content of the message</param>
+            <param name="conversationId">The conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic</param>
+        </member>
+        <member name="P:ActressMas.Message.Content">
+            <summary>
+            The content of the message (a string).
+            </summary>
+        </member>
+        <member name="P:ActressMas.Message.ContentObj">
+            <summary>
+            The content of the message (an object).
+            </summary>
+        </member>
+        <member name="P:ActressMas.Message.ConversationId">
+            <summary>
+            The conversation identifier, for the cases when a conversation involves multiple messages that refer to the same topic
+            </summary>
+        </member>
+        <member name="P:ActressMas.Message.Receiver">
+            <summary>
+            The name of the agent that needs to receive the message
+            </summary>
+        </member>
+        <member name="P:ActressMas.Message.Sender">
+            <summary>
+            The name of the agent that sends the message
+            </summary>
+        </member>
+        <member name="M:ActressMas.Message.Format">
+            <summary>
+            Returns a string of the form "[Sender -> Receiver]: Content"
+            </summary>
+        </member>
+        <member name="M:ActressMas.Message.Parse(System.String@,System.Collections.Generic.List{System.String}@)">
+            <summary>
+            Parses the content of a message and identifies the action (similar, e.g., to a performative) and the list of parameters.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Message.Parse(System.String@,System.String@)">
+            <summary>
+            Parses the content of a message and identifies the action (similar, e.g., to a performative) and the parameters concatenated in a string.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Message.Parse1P(System.String@,System.String@)">
+            <summary>
+            Parses the content of a message and identifies the action (similar, e.g., to a performative) and the single parameter.
+            </summary>
+        </member>
+        <member name="T:ActressMas.NewTextEventHandler">
+            <summary>
+            An event handler for a message from a server or a container.
+            </summary>
+        </member>
+        <member name="T:ActressMas.NewTextEventArgs">
+            <summary>
+            The class that defines a message from a server or a container.
+            </summary>
+        </member>
+        <member name="P:ActressMas.NewTextEventArgs.Text">
+            <summary>
+            The text of the message
+            </summary>
+        </member>
+        <member name="T:ActressMas.Server">
+            <summary>
+            A server that ensures the communication of containers, e.g. for the movement of agents, in a distributed system.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Server.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the Server class.
+            </summary>
+            <param name="port">The port number of the server</param>
+            <param name="ping">The time interval (in miliseconds) for the ping messages, needed to check if the containers are still alive</param>
+        </member>
+        <member name="E:ActressMas.Server.NewText">
+            <summary>
+            An event handler for the ongoing messages provided by the server.
+            </summary>
+        </member>
+        <member name="M:ActressMas.Server.Start">
+            <summary>
+            Tries to start the server
+            </summary>
+        </member>
+        <member name="M:ActressMas.Server.Stop">
+            <summary>
+            Stops the server
+            </summary>
+        </member>
+        <member name="T:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandler">
+            <summary>
+            Basic Socket Client Handler. Implements the AbstractAsyncTcpSocketClientHandler class. The message class is BasicMessage.
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandler.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            The constructor for SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+            <param name="stream">The ssl stream</param>
+        </member>
+        <member name="M:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandler.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            The constructor for not SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+        </member>
+        <member name="M:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandler.GetMessageInstance">
+            <summary>
+            Return a BasicMessage empty instance.
+            </summary>
+            <returns>The BasicMessage instance</returns>
+        </member>
+        <member name="T:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandlerReceiveQueue">
+            <summary>
+            Basic Socket Client Handler. Implements the AbstractAsyncTcpSocketClientHandler class. The message class is BasicMessage.
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandlerReceiveQueue.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            The constructor for SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+            <param name="stream">The ssl stream</param>
+        </member>
+        <member name="M:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandlerReceiveQueue.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            The constructor for not SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+        </member>
+        <member name="M:AsyncClientServerLib.SocketHandler.AsyncSocketClientHandlerReceiveQueue.GetMessageInstance">
+            <summary>
+            Return a BasicMessage empty instance.
+            </summary>
+            <returns>The BasicMessage instance</returns>
+        </member>
+        <member name="T:AsyncClientServerLib.Message.BasicHeader">
+            <summary>
+            A Basic Message Header. Implements the AbstractMessageHeader.
+            </summary>
+        </member>
+        <member name="F:AsyncClientServerLib.Message.BasicHeader.clientUID">
+            <summary>
+            The client UID
+            </summary>
+        </member>
+        <member name="F:AsyncClientServerLib.Message.BasicHeader.messageUID">
+            <summary>
+            The message UID
+            </summary>
+        </member>
+        <member name="F:AsyncClientServerLib.Message.BasicHeader.messageLength">
+            <summary>
+            The message length
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.#ctor(System.Guid,System.Guid,System.Byte[])">
+            <summary>
+            Constructor to instance a Message Header of a Message.
+            </summary>
+            <param name="clientUID">The client UID</param>
+            <param name="messageUID">The message UID</param>
+            <param name="msg">The message</param>
+        </member>
+        <member name="P:AsyncClientServerLib.Message.BasicHeader.HeaderLength">
+            <summary>
+            Get header size in bytes.
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.Write(System.Byte[],System.Int32)">
+            <summary>
+            Write the header in a buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">Offset in the buffer</param>
+            <returns>The next position in the buffer after the header</returns>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.Read(System.Byte[],System.Int32)">
+            <summary>
+            Read a hearer from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <returns>The next position in the buffer after the header</returns>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.Read(System.Byte[],System.Int32,System.Int32@)">
+            <summary>
+            Read a int from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">Offset in the buffer</param>
+            <param name="value">The int value read</param>
+            <returns>The next position in the buffer after the int</returns>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Write an int in the buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <param name="value">The int value to write</param>
+            <returns>The next position in the buffer after the int</returns>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.Read(System.Byte[],System.Int32,System.Guid@)">
+            <summary>
+            Read a Guid from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">Offset in the buffer</param>
+            <param name="value">The Guid value read</param>
+            <returns>The next position in the buffer after the Guid</returns>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicHeader.Write(System.Byte[],System.Int32,System.Guid)">
+            <summary>
+            Write a Guid in the buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <param name="value">The Guid value to write</param>
+            <returns>The next position in the buffer after the Guid</returns>
+        </member>
+        <member name="T:AsyncClientServerLib.Message.BasicMessage">
+            <summary>
+            Basic Message. Implements the AbstractMessage. The message header class is BasicHeader.
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicMessage.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicMessage.#ctor(System.Guid,System.Byte[])">
+            <summary>
+            Constructor for a message.
+            </summary>
+            <param name="clientUID">The client UID</param>
+            <param name="buffer">The message buffer</param>
+        </member>
+        <member name="M:AsyncClientServerLib.Message.BasicMessage.GetMessageHeaderInstance">
+            <summary>
+            Return an empty BasicHeader instance.
+            </summary>
+            <returns>The BasicHeader instance</returns>
+        </member>
+        <member name="T:AsyncClientServerLib.Client.BasicSocketClient">
+            <summary>
+            Basic Socket Client. Implements the AbstractSocketClient. The socket client handler class is AsyncSocketClientHandlerReceieveQueue.
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Client.BasicSocketClient.GetHandler(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Return a BasicSocketClientHandler instance.
+            </summary>
+            <param name="handler">The client socket handler</param>
+            <param name="stream">The ssl stream</param>
+            <param name="sendHandleTimeout">The send timeout</param>
+            <param name="socketSendTimeout">The socket timeout</param>
+            <returns>The BasicSocketClientHandler instance created</returns>
+        </member>
+        <member name="T:AsyncClientServerLib.Server.BasicSocketServer">
+            <summary>
+            Basic Socket Server. Implements the AbstractSocketServer class. The socket client handler class is BasicSocketClientHandler.
+            </summary>
+        </member>
+        <member name="M:AsyncClientServerLib.Server.BasicSocketServer.GetHandler(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Return a BasicSocketClientHandler instance.
+            </summary>
+            <param name="handler">The socket client handler</param>
+            <param name="sslStream">The ssl stream</param>
+            <param name="sendHandleTimeout">The send timeout</param>
+            <param name="socketSendTimeout">The socket timeout</param>
+            <returns>The socket client handler</returns>
+        </member>
+        <member name="T:BasicClientServerLib.Message.BasicHeader">
+            <summary>
+            A Basic Message Header. Implements the AbstractMessageHeader.
+            </summary>
+        </member>
+        <member name="F:BasicClientServerLib.Message.BasicHeader.clientUID">
+            <summary>
+            The client UID
+            </summary>
+        </member>
+        <member name="F:BasicClientServerLib.Message.BasicHeader.messageUID">
+            <summary>
+            The message UID
+            </summary>
+        </member>
+        <member name="F:BasicClientServerLib.Message.BasicHeader.messageLength">
+            <summary>
+            The message length
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.#ctor(System.Guid,System.Guid,System.Byte[])">
+            <summary>
+            Constructor to instance a Message Header of a Message.
+            </summary>
+            <param name="clientUID">The client UID</param>
+            <param name="messageUID">The message UID</param>
+            <param name="msg">The message</param>
+        </member>
+        <member name="P:BasicClientServerLib.Message.BasicHeader.HeaderLength">
+            <summary>
+            Get header size in bytes.
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.Write(System.Byte[],System.Int32)">
+            <summary>
+            Write the header in a buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">Offset in the buffer</param>
+            <returns>The next position in the buffer after the header</returns>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.Read(System.Byte[],System.Int32)">
+            <summary>
+            Read a hearer from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <returns>The next position in the buffer after the header</returns>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.Read(System.Byte[],System.Int32,System.Int32@)">
+            <summary>
+            Read a int from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">Offset in the buffer</param>
+            <param name="value">The int value read</param>
+            <returns>The next position in the buffer after the int</returns>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Write an int in the buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <param name="value">The int value to write</param>
+            <returns>The next position in the buffer after the int</returns>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.Read(System.Byte[],System.Int32,System.Guid@)">
+            <summary>
+            Read a Guid from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">Offset in the buffer</param>
+            <param name="value">The Guid value read</param>
+            <returns>The next position in the buffer after the Guid</returns>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicHeader.Write(System.Byte[],System.Int32,System.Guid)">
+            <summary>
+            Write a Guid in the buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <param name="value">The Guid value to write</param>
+            <returns>The next position in the buffer after the Guid</returns>
+        </member>
+        <member name="T:BasicClientServerLib.Message.BasicMessage">
+            <summary>
+            Basic Message. Implements the AbstractMessage. The message header class is BasicHeader.
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicMessage.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicMessage.#ctor(System.Guid,System.Byte[])">
+            <summary>
+            Constructor for a message.
+            </summary>
+            <param name="clientUID">The client UID</param>
+            <param name="buffer">The message buffer</param>
+        </member>
+        <member name="M:BasicClientServerLib.Message.BasicMessage.GetMessageHeaderInstance">
+            <summary>
+            Return an empty BasicHeader instance.
+            </summary>
+            <returns>The BasicHeader instance</returns>
+        </member>
+        <member name="T:BasicClientServerLib.Client.BasicSocketClient">
+            <summary>
+            Basic Socket Client. Implements the AbstractSocketClient. The socket client handler class is BasicSocketClientHandlerReceieveQueue.
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Client.BasicSocketClient.GetHandler(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Return a BasicSocketClientHandler instance.
+            </summary>
+            <param name="handler">The client socket handler</param>
+            <param name="stream">The ssl stream</param>
+            <param name="sendHandleTimeout">The send timeout</param>
+            <param name="socketSendTimeout">The socket timeout</param>
+            <returns>The BasicSocketClientHandler instance created</returns>
+        </member>
+        <member name="T:BasicClientServerLib.SocketHandler.BasicSocketClientHandler">
+            <summary>
+            Basic Socket Client Handler. Implements the AbstractTcpSocketClientHandler class. The message class is BasicMessage.
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.SocketHandler.BasicSocketClientHandler.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            The constructor for SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+            <param name="stream">The ssl stream</param>
+        </member>
+        <member name="M:BasicClientServerLib.SocketHandler.BasicSocketClientHandler.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            The constructor for not SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+        </member>
+        <member name="M:BasicClientServerLib.SocketHandler.BasicSocketClientHandler.GetMessageInstance">
+            <summary>
+            Return a BasicMessage empty instance.
+            </summary>
+            <returns>The BasicMessage instance</returns>
+        </member>
+        <member name="T:BasicClientServerLib.SocketHandler.BasicSocketClientHandlerReceiveQueue">
+            <summary>
+            Basic Socket Client Handler. Implements the AbstractTcpSocketClientHandler class. The message class is BasicMessage.
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.SocketHandler.BasicSocketClientHandlerReceiveQueue.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            The constructor for SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+            <param name="stream">The ssl stream</param>
+        </member>
+        <member name="M:BasicClientServerLib.SocketHandler.BasicSocketClientHandlerReceiveQueue.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            The constructor for not SSL connection.
+            </summary>
+            <param name="handler">The socket cient handler</param>
+        </member>
+        <member name="M:BasicClientServerLib.SocketHandler.BasicSocketClientHandlerReceiveQueue.GetMessageInstance">
+            <summary>
+            Return a BasicMessage empty instance.
+            </summary>
+            <returns>The BasicMessage instance</returns>
+        </member>
+        <member name="T:BasicClientServerLib.Server.BasicSocketServer">
+            <summary>
+            Basic Socket Server. Implements the AbstractSocketServer class. The socket client handler class is BasicSocketClientHandler.
+            </summary>
+        </member>
+        <member name="M:BasicClientServerLib.Server.BasicSocketServer.GetHandler(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Return a BasicSocketClientHandler instance.
+            </summary>
+            <param name="handler">The socket client handler</param>
+            <param name="sslStream">The ssl stream</param>
+            <param name="sendHandleTimeout">The send timeout</param>
+            <param name="socketSendTimeout">The socket timeout</param>
+            <returns>The socket client handler</returns>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler">
+            <summary>
+            This abstract class changes the AbstractTcpSocketClientHandler behavior. The asynchronous receiving is by ReceiveAsync method
+            instead of the Being/EndReceive.
+            You have to implement the method GetMessageInstance to define in your socket client handler the message class.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.readAsyncEventArgs">
+            <summary>
+            Object for async read operation.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.stateObject">
+            <summary>
+            Object for async read state.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream,System.Boolean)">
+            <summary>
+            Constructor for a socket client handler on SSL
+            </summary>
+            <param name="handler">The socket handler</param>
+            <param name="stream">The ssl stream</param>
+            <param name="useReceiveQueue">If true the message receiving is throw a queue, otherwise eash message is handle by a different thread</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Constructor for a socket client handler on SSL without receive queue
+            </summary>
+            <param name="handler">The socket handler</param>
+            <param name="stream">The ssl stream</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Constructor for a socket client handler (not SSL) without receive queue
+            </summary>
+            <param name="handler">The socket handler</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.StartReceive">
+            <summary>
+            Start asynchronous receiving.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractAsyncTcpSocketClientHandler.ProcessReceive(System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Callback for asynchronous receiving.
+            </summary>
+            <param name="e">The socket state object for receiving data</param>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.ReceiveMessageDelegate">
+            <summary>
+            Defines the delegate for a received message event
+            </summary>
+            <param name="handler">The socket client handler where the message has been received</param>
+            <param name="message">The received message</param>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.SocketConnectionDelegate">
+            <summary>
+            Defines the delegate for a connection event
+            </summary>
+            <param name="handler">The socket client handler that has been connected</param>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler">
+            <summary>
+            This abstract class represents a socket client handler with/without a receive queue and a send queue. 
+            With the receive queue, each received message is saved in a queue and a dequeuer thread
+            get the messages one by one from the queue and raise the receive message event.
+            Without the receieve queue, each time you receive a message a thread is created to raise the receive event.
+            You have to implement the method GetMessageInstance to define in your socket client handler the message class.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.socket">
+            <summary>
+            The socket
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.sendDone">
+            <summary>
+            auto resent events to synch send
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.receiveQueue">
+            <summary>
+            Receive queue
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.cancellationToken">
+            <summary>
+            Cancellation token for the dequeuer from the receive queue
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.flagShutdown">
+            <summary>
+            Flag to stop the dequeuer
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.dequeuerThread">
+            <summary>
+            Dequeuer thread
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.receiveMessageEvent">
+            <summary>
+            Delegate for received message event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.closeConnectionEvent">
+            <summary>
+            Delegate for close connection event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.inReceivingEvent">
+            <summary>
+            Delegate for incoming message event
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream,System.Boolean)">
+            <summary>
+            Constructor for a socket client handler on SSL
+            </summary>
+            <param name="handler">The socket handler</param>
+            <param name="stream">The ssl stream</param>
+            <param name="useReceiveQueue">If true the message receiving is throw a queue, otherwise each message is handle by a different thread</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Constructor for a socket client handler on SSL without receive queue
+            </summary>
+            <param name="handler">The socket handler</param>
+            <param name="stream">The ssl stream</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Constructor for a socket client handler (not SSL) without receive queue
+            </summary>
+            <param name="handler">The socket handler</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.GetMessageInstance">
+            <summary>
+            Implement this method to create a socket client handler class.
+            </summary>
+            <returns>Return an empty message instance</returns>
+        </member>
+        <member name="E:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.ReceiveMessageEvent">
+            <summary>
+            Event for a received message.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.CloseConnectionEvent">
+            <summary>
+            Event for a close connection.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.InReceivingEvent">
+            <summary>
+            Event for an incoming a message.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.KeepAlive">
+            <summary>
+            Socket Keep Alive flag
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.SendTimeout">
+            <summary>
+            Socket Send Timeout
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.OnReceiveMessage(SocketServerLib.SocketHandler.ReceiveMessageStateObject)">
+            <summary>
+            Handle a received message. A received message event is raise but in a new thread in order to not block the main thread.
+            Override this method to change the behavior.
+            </summary>
+            <param name="rcvObj">The received object</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.RaiseReceiveMessageEvent(System.Object)">
+            <summary>
+            Raise a received message event. This method is running in the same thread of the caller. 
+            </summary>
+            <param name="stateObj">The receive message state object</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.OnCloseConnection(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Handle a close connection. A close connection event is raise but in a new thread in order to not block the main thread.
+            Override this method to change the behavior.
+            </summary>
+            <param name="closedHandler">The socket client handler closed</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.RaiseCloseConnectionEvent(System.Object)">
+            <summary>
+            Raise a received message event. This method is running in the same thread of the caller. 
+            </summary>
+            <param name="stateObj">The socket client handler closed</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.OnReceivingMessage(System.Object)">
+            <summary>
+            Raise an incoming message event. This method is running in the same thread of the caller.
+            </summary>
+            <param name="handler">The socket client handler that is receiving an incoming message</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.StartReceive">
+            <summary>
+            Start asynchronous receiving.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.EndReceive(System.IAsyncResult)">
+            <summary>
+            Stop asynchronous receiving.
+            </summary>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.ReadCallback(System.IAsyncResult)">
+            <summary>
+            Callback for asynchronous receiving.
+            </summary>
+            <param name="ar">The socket state object for receiving data</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.Send(SocketServerLib.Message.AbstractMessage,System.Int32)">
+            <summary>
+            Send a buffer. It's a synchronous operation. The previous send has to be completed.
+            You can define a timeout on the previous send and skip this one in case of time out.
+            </summary>
+            <param name="message">The message to send</param>
+            <param name="previousSendTimeout">Timeout on the previous send in ms</param>
+            <returns>True if the message has been sent, otherwise false</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.Send(SocketServerLib.Message.AbstractMessage)">
+            <summary>
+            Send a buffer. It's a synchronous operation. The previous send has to be completed.
+            </summary>
+            <param name="message">The message to send</param>
+            <returns>True if the message has been sent, otherwise false</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.SendMessage(SocketServerLib.Message.AbstractMessage,System.Int32)">
+            <summary>
+            Send a buffer. It's a synchronous operation. The previous send has to be completed.
+            You can define a timeout on the previous send and skip this one in case of time out.
+            </summary>
+            <param name="message">The message to send</param>
+            <param name="previousSendTimeout">Timeout on the previous send in ms</param>
+            <returns>True if the message has been sent, otherwise false</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.SendBuffer(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler,System.Byte[],System.Int32)">
+            <summary>
+            Send a buffer. It's a synchronous operation. The previous send has to be completed.
+            You can define a timeout on the previous send and skip this one in case of time out.
+            </summary>
+            <param name="clientHandler">The socket client handler for send</param>
+            <param name="byteData">The buffer to send</param>
+            <param name="previousSendTimeout">Timeout on the previous send in ms</param>
+            <returns>True if the message has been sent, otherwise false</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.ReceiveDequeuer">
+            <summary>
+            Dequeuer. Read the receive queue and raise the receive event for each message
+            </summary>
+            <param name="stateObj">The received message</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.Close">
+            <summary>
+            Close the socket.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.Dispose">
+            <summary>
+            Close and dispose the socket client handler.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler.ToString">
+            <summary>
+            Print on a string the basic information of the socket client handler - the remote end point.
+            </summary>
+            <returns>The string with the information</returns>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.ReceiveMessageStateObject">
+            <summary>
+            This class represents the object for a received message in the asynchronous receiving.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.SocketStateObject">
+            <summary>
+            This class is used internally foe the asynchronous receiving.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.SSLSocket">
+            <summary>
+            This class extends the TcpSocket to define a SSL socket.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.SSLSocket.sslStream">
+            <summary>
+            The ssl stream
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.SSLSocket.#ctor(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Construct
+            </summary>
+            <param name="socket">The system sockect</param>
+            <param name="sslStream">The system ssl stream</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.SSLSocket.Close">
+            <summary>
+            Close the socket.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.SSLSocket.BeginReceive(SocketServerLib.SocketHandler.SocketStateObject,System.AsyncCallback)">
+            <summary>
+            Start the asynchronous receiving data. 
+            </summary>
+            <param name="state">The socket state object to receive data</param>
+            <param name="callback">The callback for the asynchronous receiving</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.SSLSocket.EndReceive(System.IAsyncResult)">
+            <summary>
+            Stop the asynchronous receiving.
+            </summary>
+            <param name="result">The socket state object to receive data</param>
+            <returns>The number of bytes received</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.SSLSocket.Send(System.Byte[])">
+            <summary>
+            Send a buffer. This method is synchronus.
+            </summary>
+            <param name="buffer">The buffer to send</param>
+            <returns>The number of bytes sent</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.SSLSocket.Dispose">
+            <summary>
+            Close and dispose the socket and the ssl stream.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.TcpSocket">
+            <summary>
+            This class represents a Socket (not SSL). Incapsulates the system Socket class in order to allow different implementations.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.TcpSocket.socket">
+            <summary>
+            The underlayer 
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="socket">The system socket</param>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.TcpSocket.KeepAlive">
+            <summary>
+            Get or Set the system socket Keep Alive flag
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.TcpSocket.SendTimeout">
+            <summary>
+            Get or Set the system socket send time out
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.TcpSocket.IPEndPoint">
+            <summary>
+            Get the remote end point.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.TcpSocket.Connected">
+            <summary>
+            Get if the sockect is connected.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.Close">
+            <summary>
+            Close the socket.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.BeginReceive(SocketServerLib.SocketHandler.SocketStateObject,System.AsyncCallback)">
+            <summary>
+            Start the asynchronous receiving data. 
+            </summary>
+            <param name="state">The socket state object to receive data</param>
+            <param name="callback">The callback for the asynchronous receiving</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.EndReceive(System.IAsyncResult)">
+            <summary>
+            Stop the asynchronous receiving.
+            </summary>
+            <param name="result">The socket state object to receive data</param>
+            <returns>The number of bytes received</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.BeginSend(System.Byte[],SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler,System.AsyncCallback)">
+            <summary>
+            Start the asynchronous sending data
+            </summary>
+            <param name="buffer">The buffer to send</param>
+            <param name="handler">The socket client handler</param>
+            <param name="callback">The callback for the asynchronous sending</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.EndSend(System.IAsyncResult,System.Net.Sockets.SocketError@)">
+            <summary>
+            Stop the asynchronous sending.
+            </summary>
+            <param name="result">The socket client handler</param>
+            <param name="errorCode">The error code in case of error</param>
+            <returns>The number of bytes received</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.Send(System.Byte[])">
+            <summary>
+            Send a buffer. This method is synchronus.
+            </summary>
+            <param name="buffer">The buffer to send</param>
+            <returns>The number of bytes sent</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocket.Dispose">
+            <summary>
+            Close and dispose the sockect.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.TcpSocketAsync">
+            <summary>
+            This class represents a Socket (not SSL). Incapsulates the system Socket class in order to allow different implementations.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocketAsync.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="socket">The system socket</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocketAsync.BeginReceive(SocketServerLib.SocketHandler.SocketStateObject,System.AsyncCallback)">
+            <summary>
+            Start the asynchronous receiving data. 
+            </summary>
+            <param name="state">The socket state object to receive data</param>
+            <param name="callback">The callback for the asynchronous receiving</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocketAsync.EndReceive(System.IAsyncResult)">
+            <summary>
+            Stop the asynchronous receiving.
+            </summary>
+            <param name="result">The socket state object to receive data</param>
+            <returns>The number of bytes received</returns>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocketAsync.ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Receiving asynchronous data. 
+            </summary>
+            <param name="e">The SocketAsyncEventArgs</param>
+        </member>
+        <member name="T:SocketServerLib.SocketHandler.TcpSocketException">
+            <summary>
+            This class represent a socket exception in the libray.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.SocketHandler.TcpSocketException.disconnectionRequired">
+            <summary>
+            Flag to decide if a disconnection is required due the exception.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocketException.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="message">The exception message</param>
+            <param name="disconnectionRequired">Flag to indicate if a disconnection is required</param>
+        </member>
+        <member name="M:SocketServerLib.SocketHandler.TcpSocketException.#ctor(System.String)">
+            <summary>
+            Constructor for an exception that not requied a disconnection.
+            </summary>
+            <param name="message">The exception message</param>
+        </member>
+        <member name="P:SocketServerLib.SocketHandler.TcpSocketException.DisconnectionRequired">
+            <summary>
+            Get if a disconnection is required.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.Message.AbstractMessage">
+            <summary>
+            This abstact class represent A message. You have to extend and implement this class to define your message.
+            The message header is already included.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Message.AbstractMessage.header">
+            <summary>
+            The message header.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Message.AbstractMessage.body">
+            <summary>
+            The body as byte[]
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Message.AbstractMessage.bufferIndex">
+            <summary>
+            Index in the buffer
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Message.AbstractMessage.previousBuffer">
+            <summary>
+            Buffer for pending message in receiving
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.GetMessageHeaderInstance">
+            <summary>
+            Return an empty instance of a Message Header. Implement this method to define your message class.
+            </summary>
+            <returns>The empty Message Header instance</returns>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessage.ClientUID">
+            <summary>
+            The Client UID.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessage.MessageUID">
+            <summary>
+            The message UID.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessage.MessageLength">
+            <summary>
+            The message length included the header.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessage.Header">
+            <summary>
+            The Message Header.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.GetEnvelope">
+            <summary>
+            The full message (header + body) as byte[]
+            </summary>
+            <returns>The buffer contains the full message</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.GetBuffer">
+            <summary>
+            The message body as byte[]
+            </summary>
+            <returns>The buffer contains the message body</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.IsComplete">
+            <summary>
+            Check if the message is complete.
+            </summary>
+            <returns>Return true if the message is complete, otherwise false.</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.ReadFirstMessage(System.Byte[],System.Int32)">
+            <summary>
+            Read the first message contained in the buffer.
+            </summary>
+            <param name="buffer">The buffer used for the receiving</param>
+            <param name="len">The real size of the buffer</param>
+            <returns>0 if the message in the buffer is not complete. Otherwise the len of the message read</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.ReadFirstMessage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the first message contained in the buffer.
+            </summary>
+            <param name="buffer">The buffer used for the receiving</param>
+            <param name="offset">The offset for start read the buffer</param>
+            <param name="len">The real size of the buffer</param>
+            <returns>0 if the message in the buffer is not complete. Otherwise the len of the message read</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.AppendBuffer(System.Byte[],System.Int32)">
+            <summary>
+            Add a buffer to the pending message and try to read the first message.
+            </summary>
+            <param name="buffer">The buffer to add</param>
+            <param name="len">The real size of the buffer</param>
+            <returns>0 if the message in the buffer is still not complete. Otherwise the len of the message read</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessage.TryReadMessage(SocketServerLib.Message.AbstractMessage,SocketServerLib.SocketHandler.SocketStateObject,System.Int32)">
+            <summary>
+            Try to read a message from the buffer.
+            </summary>
+            <param name="message">The destination message</param>
+            <param name="state">The state object</param>
+            <param name="byteRead">The umber of bytes in the input buffer</param>
+            <returns>The message read, otherwise false.</returns>
+        </member>
+        <member name="T:SocketServerLib.Message.AbstractMessageHeader">
+            <summary>
+            This abstract class represent a message header. You have to extend and implement this class to define your message header.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Message.AbstractMessageHeader.complete">
+            <summary>
+            Flag for a complete header read from a buffer.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessageHeader.#ctor">
+            <summary>
+            Constructor for an empty message header.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessageHeader.ClientUID">
+            <summary>
+            Get the ClientUID.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessageHeader.MessageUID">
+            <summary>
+            Get the Message UID.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessageHeader.MessageLength">
+            <summary>
+            Get the message length.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Message.AbstractMessageHeader.HeaderLength">
+            <summary>
+            Get the header length.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessageHeader.Write(System.Byte[],System.Int32)">
+            <summary>
+            Write the header in a buffer.
+            </summary>
+            <param name="destBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <returns>The next position in the buffer after the header</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessageHeader.Read(System.Byte[],System.Int32)">
+            <summary>
+            Read the header from a buffer.
+            </summary>
+            <param name="sourceBuffer">The buffer</param>
+            <param name="offset">The offset in the buffer</param>
+            <returns>The next position in the buffer after the header. Return 0 in case the hedaer is not complete</returns>
+        </member>
+        <member name="M:SocketServerLib.Message.AbstractMessageHeader.IsComplete">
+            <summary>
+            Chekk if the header is complete.
+            </summary>
+            <returns>True if the header is complete, otherwise false</returns>
+        </member>
+        <member name="T:SocketServerLib.Message.MessageException">
+            <summary>
+            This class represents the message exception in the library.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Message.MessageException.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="message">The message of the exception</param>
+        </member>
+        <member name="T:SocketServerLib.Client.AbstractSocketClient">
+            <summary>
+            This abstract class represents a Client to a Socket Server. Implement the method GetHandler to create your Socket Client.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.handler">
+            <summary>
+            The socket client handler
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.connectionEvent">
+            <summary>
+            Delegate for a connection event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.closeConnectionEvent">
+            <summary>
+            Delegate for a close connection event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.inReceivingEvent">
+            <summary>
+            Delegate for an incoming message event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.receiveMessageEvent">
+            <summary>
+            Delegate for a receive message event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.connected">
+            <summary>
+            Flag for connection status (connected or not)
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.flagRemoteCertificateNameMismatch">
+            <summary>
+            Flag for check on certification
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Client.AbstractSocketClient.raiseLock">
+            <summary>
+            Lock object for raise event
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.GetHandler(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Implement this method to create a Socket Client class.
+            </summary>
+            <param name="handler">The socket client handler</param>
+            <param name="stream">The ssl stream</param>
+            <param name="sendHandleTimeout">The send timeout</param>
+            <param name="socketSendTimeout">The socket send timeout</param>
+            <returns></returns>
+        </member>
+        <member name="P:SocketServerLib.Client.AbstractSocketClient.KeepAlive">
+            <summary>
+            Get/set Socket Keep Alive flag.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Client.AbstractSocketClient.IsConnected">
+            <summary>
+            Get if the client is connected or not
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Client.AbstractSocketClient.ConnectionEvent">
+            <summary>
+            Event for a connection.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Client.AbstractSocketClient.CloseConnectionEvent">
+            <summary>
+            Event for a close connection.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Client.AbstractSocketClient.InReceivingEvent">
+            <summary>
+            Event for an incoming a message.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Client.AbstractSocketClient.ReceiveMessageEvent">
+            <summary>
+            Event for receive a message.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.Close">
+            <summary>
+            Close the Client.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.Connect(System.Net.IPEndPoint,System.String,System.String)">
+            <summary>
+            Connect the client to the EndPoint on SSL.
+            </summary>
+            <param name="endPoint">The remote end point</param>
+            <param name="clientCertificatePath">The client certificate file</param>
+            <param name="certificatePassword">The client certifciate password</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.Connect(System.Net.IPEndPoint)">
+            <summary>
+            Connect the client to the EndPoint.
+            </summary>
+            <param name="endPoint">The remote end point</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.OnVerifyCertificate(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Method to verify the certificate
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="certificate">The certificate</param>
+            <param name="chain">The chain</param>
+            <param name="sslPolicyErrors">The error policy</param>
+            <returns></returns>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.OnConnection(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Raise a connect event.
+            </summary>
+            <param name="abstractTcpSocketClientHandler">The socket client handler closed</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.handler_CloseConnectionEvent(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Raise a close connection event.
+            </summary>
+            <param name="handler">The socket client handler of the close connection</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.handler_InReceivingEvent(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Raise an incoming message event.
+            </summary>
+            <param name="handler">The socket client handler of the close connection</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.handler_ReceiveMessageEvent(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler,SocketServerLib.Message.AbstractMessage)">
+            <summary>
+            Raise a received message event.
+            </summary>
+            <param name="handler">The socket client handler of the close connection</param>
+            <param name="message">The message received</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.OnReceiveMessage(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler,SocketServerLib.Message.AbstractMessage)">
+            <summary>
+            Override this method to change the raise event on a received message event
+            </summary>
+            <param name="handler">The socket client handler of the close connection</param>
+            <param name="message">The message received</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.Send(SocketServerLib.Message.AbstractMessage)">
+            <summary>
+            Send a message
+            </summary>
+            <param name="message">The message to send</param>
+            <returns>True if the message has been sent, otherwise false</returns>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.SendAsync(SocketServerLib.Message.AbstractMessage)">
+            <summary>
+            Send asynchronous message
+            </summary>
+            <param name="message">The message to send</param>
+        </member>
+        <member name="M:SocketServerLib.Client.AbstractSocketClient.Dispose">
+            <summary>
+            Close and dispose the client.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.Server.AbstractSocketServer">
+            <summary>
+            This abstract class represent a Socket Server.
+            Implements the method GetHandler to define the socket client handler used in your Socket Server.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.serverCertificate">
+            <summary>
+            Server certificate for the SSL
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.listener">
+            <summary>
+            Socket listener
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.sslListener">
+            <summary>
+            TcpListener for SSL
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.listenerCompleteConnectionEvent">
+            <summary>
+            The thread notification for complete a connection on listener
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.clientList">
+            <summary>
+            The Client List
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.receiveMessageEvent">
+            <summary>
+            Delegate for a receive message event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.connectionEvent">
+            <summary>
+            Delegate for a new connection event
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.AbstractSocketServer.closeConnectionEvent">
+            <summary>
+            Delegate for a close connection event
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Server.AbstractSocketServer.KeepAlive">
+            <summary>
+            Keep Alive
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Server.AbstractSocketServer.ReceiveMessageEvent">
+            <summary>
+            Event for receive a message.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Server.AbstractSocketServer.ConnectionEvent">
+            <summary>
+            Event for a new connection.
+            </summary>
+        </member>
+        <member name="E:SocketServerLib.Server.AbstractSocketServer.CloseConnectionEvent">
+            <summary>
+            Event for a close connection.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.Init(System.Net.IPEndPoint,System.String,System.String)">
+            <summary>
+            Init a listener for a SSL communication.
+            </summary>
+            <param name="endPoint">The listener IP/Port</param>
+            <param name="serverCertificateFilename">The server certification file</param>
+            <param name="certificatePassword">The server certification password</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.Init(System.Net.IPEndPoint)">
+            <summary>
+            Init a lister for a not SSL communication
+            </summary>
+            <param name="endPoint">The listener IP/Port</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.ThreadLoop">
+            <summary>
+            The thread loop is used to accecpt new incoming connection. The Accept method is asynchronous.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.AcceptCallback(System.IAsyncResult)">
+            <summary>
+            Accept callback method for not SSL connection
+            </summary>
+            <param name="ar">The socket server</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.AcceptSSLCallback(System.IAsyncResult)">
+            <summary>
+            Accept callback method for SSL connection.
+            </summary>
+            <param name="ar">The socket server</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.GetHandler(System.Net.Sockets.Socket,System.Net.Security.SslStream)">
+            <summary>
+            Implement this method to return a socket client handler instance
+            </summary>
+            <param name="handler">The socket handler</param>
+            <param name="sslStream">The ssl stream</param>
+            <param name="sendHandleTimeout">The send time out</param>
+            <param name="socketSendTimeout">The socket send time out</param>
+            <returns></returns>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.GetClientList">
+            <summary>
+            Return a clones client list.
+            </summary>
+            <returns>A cloned client list</returns>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.GetClientInfo(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Override this method to change the instace used for the Client Info
+            </summary>
+            <param name="abstractTcpSocketClientHandler">The socket client handler for the cient info</param>
+            <returns>The client info contains the socket clilent handler</returns>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.OnVerifyClientCertificate(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Override this method to chage the vVerification of the client certificate
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="certificate">The cliet certificate</param>
+            <param name="chain">The chain</param>
+            <param name="sslPolicyErrors">The policy</param>
+            <returns></returns>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.clientHandler_CloseConnectionEvent(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Raise the close connection event.
+            </summary>
+            <param name="handler">The socket client handler disconnected</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.OnReceiveMessage(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler,SocketServerLib.Message.AbstractMessage)">
+            <summary>
+            Raise the receive message event.
+            </summary>
+            <param name="handler">The socket client handler for the received message</param>
+            <param name="abstractMessage">The message received</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.OnConnection(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Raise the new conection event.
+            </summary>
+            <param name="handler">The socket client handler connected</param>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.Shutdown">
+            <summary>
+            Shutdown the server and stop the main thread.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.AbstractSocketServer.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.Server.ClientInfo">
+            <summary>
+            This is the class for a Client Info. Extend this class to add new properties.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.ClientInfo.abstractTcpSocketClientHandler">
+            <summary>
+            The socket client handler connected as client
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.ClientInfo.clientUID">
+            <summary>
+            The string for the client identification. For default is abstractTcpSocketClientHandler.ToString()
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfo.#ctor(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="abstractTcpSocketClientHandler">The socket client handler</param>
+        </member>
+        <member name="P:SocketServerLib.Server.ClientInfo.TcpSocketClientHandler">
+            <summary>
+            Get the underlayer socket client handler.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Server.ClientInfo.ClientUID">
+            <summary>
+            Get the cient UID.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfo.ToString">
+            <summary>
+            Print on string the information.
+            </summary>
+            <returns>The client information</returns>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfo.Dispose">
+            <summary>
+            Dispose the client.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.Server.ClientInfoList">
+            <summary>
+            This class contains a list of client in a Socket Server.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Server.ClientInfoList.clientList">
+            <summary>
+            Hashtable to store the clients
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfoList.AddClient(SocketServerLib.Server.ClientInfo)">
+            <summary>
+            Add a client to the list.
+            </summary>
+            <param name="client">The client to add</param>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfoList.RemoveClient(SocketServerLib.Server.ClientInfo)">
+            <summary>
+            Remove a client from the list.
+            </summary>
+            <param name="client">The client to remove</param>
+        </member>
+        <member name="P:SocketServerLib.Server.ClientInfoList.Count">
+            <summary>
+            Get the number of clients.
+            </summary>
+        </member>
+        <member name="P:SocketServerLib.Server.ClientInfoList.Item(SocketServerLib.SocketHandler.AbstractTcpSocketClientHandler)">
+            <summary>
+            Get from the client list the Client Info connected to the specific socket client handler.
+            </summary>
+            <param name="abstractTcpSocketClientHandler">The socket client handler to find</param>
+            <returns>The client info of the socket client handler</returns>
+        </member>
+        <member name="P:SocketServerLib.Server.ClientInfoList.Item(System.String)">
+            <summary>
+            Get from the client list the Client Info of the specific ClientUID.
+            </summary>
+            <param name="clientUID">The client UID to find</param>
+            <returns>The client info of the client UID</returns>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfoList.CloneClientList">
+            <summary>
+            Return a clone of the client list.
+            </summary>
+            <returns>A clone of the client list as a Client Info array</returns>
+        </member>
+        <member name="M:SocketServerLib.Server.ClientInfoList.Dispose">
+            <summary>
+            Dispose all the contained clients.
+            </summary>
+        </member>
+        <member name="T:SocketServerLib.Threads.AbstractThread">
+            <summary>
+            This abstract class represents a thread. You have to implement the method ThreadLoop to define what the thread continuoisly do.
+            To start the thread call Init and then StartUp. To stop the thread call Shutdown.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Threads.AbstractThread.th">
+            <summary>
+            The internal thread.
+            </summary>
+        </member>
+        <member name="F:SocketServerLib.Threads.AbstractThread.shutdown">
+            <summary>
+            Flag to stop the thread.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.ThreadLoop">
+            <summary>
+            Implement this method to define what the thread do in its infinite loop.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.Init">
+            <summary>
+            Init the thread.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.StartUp">
+            <summary>
+            Start the thread.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.Shutdown">
+            <summary>
+            Stop the thread.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.Run">
+            <summary>
+            This is the internal thread loop. The shutdown flag is checked and if false the abstract ThreadLoop method is called.
+            It's a infinite loop until the shutdown.
+            </summary>
+        </member>
+        <member name="M:SocketServerLib.Threads.AbstractThread.Dispose">
+            <summary>
+            Shutdown and dispose the thread.
+            </summary>
+        </member>
+    </members>
+</doc>
