@@ -16,6 +16,6 @@ Multiagent protocols and algorithms implemented with ActressMAS:
 - Iterated Prisoner's Dilemma
 - Predator-Prey Simulation
 - Game of Life
-- Voting
+- Voting methods: Copeland, Borda count
 - Mobile agents
 - Benchmarks: PingPong, Skynet
