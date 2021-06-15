@@ -15,3 +15,7 @@ Multiagent protocols and algorithms implemented with ActressMAS:
 - Mechanism design: Grove-Clarke taxes
 - Iterated Prisoner's Dilemma
 - Predator-Prey Simulation
+- Game of Life
+- Voting
+- Mobile agents
+- Benchmarks: PingPong, Skynet
