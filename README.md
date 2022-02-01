@@ -19,3 +19,5 @@ Multiagent protocols and algorithms implemented with ActressMAS:
 - Voting methods: Copeland, Borda count
 - Mobile agents
 - Benchmarks: PingPong, Skynet
+
+A detailed description of ActressMAS architecture and examples can be found in this paper: https://doi.org/10.3390/math10030382
