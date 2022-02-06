@@ -31,23 +31,64 @@ namespace LrtaStar
             _neighbors = new Dictionary<string, string>();
 
             string mapName = Environment.Memory["MapName"];
-
-            var sr = new StreamReader(mapName + ".grx");
-            string graph = sr.ReadToEnd();
-            sr.Close();
-
-            string[] lines = graph.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < lines.Length; i++)
+            try
             {
-                string[] toks = lines[i].Split('=');
-                _neighbors.Add(toks[0].Trim(), toks[1].Trim());
+                var sr = new StreamReader(mapName + ".grx");
+                string graph = sr.ReadToEnd();
+                sr.Close();
+                string[] lines = graph.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string[] toks = lines[i].Split('=');
+                    _neighbors.Add(toks[0].Trim(), toks[1].Trim());
+                }
+
+                sr = new StreamReader(mapName + ".grh");
+                string all = sr.ReadToEnd();
+                sr.Close();
+
+                _heuristics = all.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             }
+            catch (FileNotFoundException)
+            {
+                string pathToContentRoot = string.Empty;
+                
+                var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+                pathToContentRoot = Path.GetDirectoryName(pathToExe);
+                if (pathToExe.Contains("\\bin\\Debug\\LrtaStar.exe"))
+                {
+                    
+                    pathToContentRoot = pathToExe.Replace("\\bin\\Debug\\LrtaStar.exe", "");
+                }
+                
+                var sr = new StreamReader(
+                    pathToContentRoot + "\\bin\\Release\\Pendulum.grx");
+                //Examples/E03 LRTA Search
+                string graph = sr.ReadToEnd();
+                sr.Close();
+                string[] lines = graph.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string[] toks = lines[i].Split('=');
+                    _neighbors.Add(toks[0].Trim(), toks[1].Trim());
+                }
+                
+                string pathToContentRoot1 = string.Empty;
+                
+                var pathToExe1 = Process.GetCurrentProcess().MainModule.FileName;
+                pathToContentRoot = Path.GetDirectoryName(pathToExe);
+                if (pathToExe1.Contains("\\bin\\Debug\\LrtaStar.exe"))
+                {
+                    
+                    pathToContentRoot1 = pathToExe.Replace("\\bin\\Debug\\LrtaStar.exe", "");
+                }
+                
+                sr = new StreamReader(pathToContentRoot1 + "\\bin\\Release\\Pendulum.grh");
+                string all = sr.ReadToEnd();
+                sr.Close();
 
-            sr = new StreamReader(mapName + ".grh");
-            string all = sr.ReadToEnd();
-            sr.Close();
-
-            _heuristics = all.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                _heuristics = all.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            }
         }
 
         private string ExpandState(string state)
