@@ -1,0 +1,2 @@
+All source files in the TSP directory come from:
+https://github.com/fx-world/TheTravellingSalesman by fx-world (2018)

@@ -1,0 +1,1 @@
+The ActressMasManual contains the API documentation for version 3.0. Version 3.1 uses the same API, except that the RunnableMas class has been removed; see the Mobile examples for the updated approach.
