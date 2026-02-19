@@ -2,7 +2,7 @@
  *                                                                        *
  *  Website:     https://github.com/florinleon/ActressMas                 *
  *  Description: Contract Net Protocol using the ActressMas framework     *
- *  Copyright:   (c) 2021, Florin Leon                                    *
+ *  Copyright:   (c) 2021-2026, Florin Leon                               *
  *                                                                        *
  *  This code and information is provided "as is" without warranty of     *
  *  any kind, either expressed or implied, including but not limited      *
@@ -71,7 +71,7 @@ namespace ContractNetProtocol
                     sb.Append($"{i + 1}.{loc.Name} ");
                 }
                 sb.Append("-> ");
-                sb.Append($"{ _length} km");
+                sb.Append($"{_length} km");
                 return sb.ToString();
             }
         }
@@ -84,17 +84,25 @@ namespace ContractNetProtocol
 
         public bool WorstTask(out string taskName, out double difference)
         {
-            double payoff = ComputePayoff(_assignment, _length);
-            double p0 = payoff;
+            double p0 = ComputePayoff(_assignment, _length);
             double maxPayoff = double.MinValue;
             int selected = -1;
 
             for (int i = 0; i < _assignment.Count; i++)
             {
                 var ss = VirtualRemoveTask(_assignment[i].Name);
-                var path = TSP.Solve(ss);
-                double len = path.GetPathLength();
-                payoff = ComputePayoff(ss, len);
+                double payoff;
+
+                if (ss.Count == 0)
+                {
+                    payoff = 0.0;  // no tasks left: payoff is zero (no income, no travel cost)
+                }
+                else
+                {
+                    var path = TSP.Solve(ss);
+                    double len = path.GetPathLength();
+                    payoff = ComputePayoff(ss, len);
+                }
 
                 if (payoff > maxPayoff)
                 {
@@ -128,6 +136,13 @@ namespace ContractNetProtocol
 
         private void Solve()
         {
+            if (_assignment == null || _assignment.Count == 0)
+            {
+                _path = new int[0];
+                _length = 0.0;
+                return;
+            }
+
             var path = TSP.Solve(_assignment);
             _path = path.GetLocations();  // 0 to n-1
             _length = path.GetPathLength();
